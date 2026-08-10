@@ -133,7 +133,9 @@
     <script>
         const SUPABASE_URL = 'https://arymlhhimucgpxdqgovc.supabase.co';
         const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFyeW1saGhpbXVjZ3B4ZHFnb3ZjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODYzNzI4MTQsImV4cCI6MjEwMTk0ODgxNH0.oL0TgtEgPMJXDI2_cb9Ngv84Qh_zHCLzE0q2ohtHAQI';
-        const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+        
+        // Fixed name collision by using 'supabaseClient'
+        const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
         const authSection = document.getElementById('authSection');
         const dashboardSection = document.getElementById('dashboardSection');
@@ -149,15 +151,19 @@
 
         // Check authentication state on page load
         async function checkUser() {
-            const { data: { session } } = await supabase.auth.getSession();
-            if (session) {
-                authSection.style.display = 'none';
-                dashboardSection.style.display = 'block';
-                logoutBtn.style.display = 'block';
-            } else {
-                authSection.style.display = 'block';
-                dashboardSection.style.display = 'none';
-                logoutBtn.style.display = 'none';
+            try {
+                const { data: { session } } = await supabaseClient.auth.getSession();
+                if (session) {
+                    authSection.style.display = 'none';
+                    dashboardSection.style.display = 'block';
+                    logoutBtn.style.display = 'block';
+                } else {
+                    authSection.style.display = 'block';
+                    dashboardSection.style.display = 'none';
+                    logoutBtn.style.display = 'none';
+                }
+            } catch (err) {
+                console.error("Session check error:", err);
             }
         }
         checkUser();
@@ -165,23 +171,32 @@
         // Login Handler
         loginForm.addEventListener('submit', async (e) => {
             e.preventDefault();
-            const email = document.getElementById('email').value;
+            const email = document.getElementById('email').value.trim();
             const password = document.getElementById('password').value;
             const status = document.getElementById('authStatus');
 
             status.textContent = 'Authenticating...';
-            const { error } = await supabase.auth.signInWithPassword({ email, password });
+            status.className = "text-center text-xs text-amber-400 mt-2 font-medium";
 
-            if (error) {
-                status.textContent = error.message;
-            } else {
-                checkUser();
+            try {
+                const { data, error } = await supabaseClient.auth.signInWithPassword({ email, password });
+
+                if (error) {
+                    status.className = "text-center text-xs text-red-400 mt-2 font-medium";
+                    status.textContent = error.message;
+                } else {
+                    status.textContent = '';
+                    checkUser();
+                }
+            } catch (err) {
+                status.className = "text-center text-xs text-red-400 mt-2 font-medium";
+                status.textContent = 'Unexpected error: ' + err.message;
             }
         });
 
         // Logout Handler
         logoutBtn.addEventListener('click', async () => {
-            await supabase.auth.signOut();
+            await supabaseClient.auth.signOut();
             checkUser();
         });
 
@@ -250,7 +265,7 @@
             const filePath = `${section}/${Date.now()}_${file.name}`;
 
             // 1. Upload to Supabase Storage Bucket ('site-uploads')
-            const { error: storageError } = await supabase.storage
+            const { error: storageError } = await supabaseClient.storage
                 .from('site-uploads')
                 .upload(filePath, file);
 
@@ -260,14 +275,14 @@
             }
 
             // 2. Retrieve Public URL
-            const { data: { publicUrl } } = supabase.storage
+            const { data: { publicUrl } } = supabaseClient.storage
                 .from('site-uploads')
                 .getPublicUrl(filePath);
 
             status.textContent = 'Saving file metadata to database...';
 
             // 3. Insert record into database table ('files')
-            const { error: dbError } = await supabase
+            const { error: dbError } = await supabaseClient
                 .from('files')
                 .insert([{
                     file_name: file.name,
