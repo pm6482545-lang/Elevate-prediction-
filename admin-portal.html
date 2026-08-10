@@ -1,0 +1,404 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Portal - Elevate Kenya</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background-color: #0b1329;
+            color: #ffffff;
+        }
+        .glass-card {
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 215, 0, 0.15);
+        }
+        .access-option input:checked + div {
+            border-color: #f59e0b;
+            background: rgba(245, 158, 11, 0.1);
+        }
+    </style>
+</head>
+<body class="bg-[#070b19] text-gray-100 antialiased min-h-screen flex flex-col justify-between">
+
+    <!-- Navbar -->
+    <nav class="bg-[#070b19]/90 backdrop-blur-md border-b border-white/10 px-6 py-4 flex justify-between items-center">
+        <div class="flex items-center space-x-3">
+            <img src="logo.png" alt="Logo" class="h-9 w-9 object-contain">
+            <span class="font-extrabold text-sm tracking-wider text-amber-400">ADMIN CONTROL CENTER</span>
+        </div>
+        <button id="logoutBtn" style="display: none;" class="bg-red-500/20 border border-red-500/50 text-red-400 px-4 py-2 rounded-xl text-xs font-bold hover:bg-red-500 hover:text-white transition-all">
+            <i class="fa-solid fa-power-off mr-1"></i> Logout
+        </button>
+    </nav>
+
+    <!-- Main Container -->
+    <main class="max-w-2xl mx-auto px-4 py-12 flex-grow w-full">
+
+        <!-- Login Section -->
+        <div id="authSection" class="glass-card rounded-2xl p-8 shadow-xl border border-amber-500/30">
+            <div class="text-center mb-6">
+                <div class="w-12 h-12 bg-amber-500/10 border border-amber-500/30 rounded-xl flex items-center justify-center text-amber-400 text-xl mx-auto mb-3">
+                    <i class="fa-solid fa-lock"></i>
+                </div>
+                <h2 class="text-2xl font-extrabold text-white">Admin Login</h2>
+                <p class="text-xs text-gray-400 mt-1">Authorized personnel only</p>
+            </div>
+            <form id="loginForm" class="space-y-4">
+                <div>
+                    <label class="block text-xs font-bold text-gray-300 uppercase mb-1">Email Address</label>
+                    <input type="email" id="email" required class="w-full bg-[#070b19] border border-white/10 rounded-xl px-4 py-3 text-sm text-white focus:border-amber-500 focus:outline-none" placeholder="admin@example.com" />
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-gray-300 uppercase mb-1">Password</label>
+                    <input type="password" id="password" required class="w-full bg-[#070b19] border border-white/10 rounded-xl px-4 py-3 text-sm text-white focus:border-amber-500 focus:outline-none" placeholder="••••••••" />
+                </div>
+                <button type="submit" class="w-full bg-amber-500 hover:bg-amber-400 text-black font-extrabold py-3.5 rounded-xl transition-all text-sm shadow-md">
+                    LOGIN TO DASHBOARD
+                </button>
+                <p id="authStatus" class="text-center text-xs text-red-400 mt-2 font-medium"></p>
+            </form>
+        </div>
+
+        <!-- Upload Dashboard Section (Hidden by default) -->
+        <div id="dashboardSection" style="display: none;" class="glass-card rounded-2xl p-8 shadow-xl border border-amber-500/30">
+            <div class="mb-6 border-b border-white/10 pb-4">
+                <h2 class="text-xl font-extrabold text-white">Upload Resource / Paper</h2>
+                <p class="text-xs text-gray-400">Configure parameters before deploying files to Supabase</p>
+            </div>
+
+            <form id="uploadForm" class="space-y-5">
+                <!-- Section Select -->
+                <div>
+                    <label class="block text-xs font-bold text-amber-400 uppercase mb-1">Target Section</label>
+                    <select id="sectionSelect" required class="w-full bg-[#070b19] border border-white/10 rounded-xl px-4 py-3 text-sm text-white focus:border-amber-500 focus:outline-none">
+                        <option value="">-- Select Section --</option>
+                        <option value="prediction">Prediction Exams (KPSEA / KJSEA / KCSE)</option>
+                        <option value="lower-primary">Lower Primary Material</option>
+                        <option value="upper-primary">Upper Primary Material</option>
+                        <option value="junior-school">Junior School Material</option>
+                        <option value="senior-school">Senior School Material</option>
+                    </select>
+                </div>
+
+                <!-- Conditional Sub-Category for Predictions -->
+                <div id="examCategoryGroup" style="display: none;">
+                    <label class="block text-xs font-bold text-amber-400 uppercase mb-1">Exam Tier</label>
+                    <select id="examCategorySelect" class="w-full bg-[#070b19] border border-white/10 rounded-xl px-4 py-3 text-sm text-white focus:border-amber-500 focus:outline-none">
+                        <option value="kpsea">KPSEA (Primary Prediction)</option>
+                        <option value="kjsea">KJSEA (Junior School Prediction)</option>
+                        <option value="kcse">KCSE (Senior School Prediction)</option>
+                    </select>
+                </div>
+
+                <!-- Conditional Grade Selection -->
+                <div id="gradeGroup" style="display: none;">
+                    <label class="block text-xs font-bold text-amber-400 uppercase mb-1">Grade Level</label>
+                    <select id="gradeSelect" class="w-full bg-[#070b19] border border-white/10 rounded-xl px-4 py-3 text-sm text-white focus:border-amber-500 focus:outline-none">
+                        <option value="">-- Select Grade --</option>
+                        <!-- Populated dynamically based on section -->
+                    </select>
+                </div>
+
+                <!-- Access Type: Free or Premium -->
+                <div>
+                    <label class="block text-xs font-bold text-amber-400 uppercase mb-1">Access Type</label>
+                    <div class="grid grid-cols-2 gap-3">
+                        <label class="access-option cursor-pointer">
+                            <input type="radio" name="accessType" value="free" checked class="hidden peer" />
+                            <div class="border border-white/10 rounded-xl px-4 py-3 text-sm text-center font-bold text-gray-300 transition-all">
+                                <i class="fa-solid fa-unlock mr-1"></i> Free
+                            </div>
+                        </label>
+                        <label class="access-option cursor-pointer">
+                            <input type="radio" name="accessType" value="premium" class="hidden peer" />
+                            <div class="border border-white/10 rounded-xl px-4 py-3 text-sm text-center font-bold text-gray-300 transition-all">
+                                <i class="fa-solid fa-crown mr-1"></i> Premium
+                            </div>
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Price (only for Premium) -->
+                <div id="priceGroup" style="display: none;">
+                    <label class="block text-xs font-bold text-amber-400 uppercase mb-1">Price (KES)</label>
+                    <input type="number" id="priceInput" min="1" step="1" placeholder="e.g. 50" class="w-full bg-[#070b19] border border-white/10 rounded-xl px-4 py-3 text-sm text-white focus:border-amber-500 focus:outline-none" />
+                </div>
+
+                <!-- Title Input -->
+                <div>
+                    <label class="block text-xs font-bold text-gray-300 uppercase mb-1">Title (shown on site)</label>
+                    <input type="text" id="subjectInput" placeholder="e.g. Mathematics Form 4 Paper 1" class="w-full bg-[#070b19] border border-white/10 rounded-xl px-4 py-3 text-sm text-white focus:border-amber-500 focus:outline-none" />
+                    <p class="text-[11px] text-gray-500 mt-1">This exact text becomes the file's name in Supabase and is what shows up wherever the file is fetched on your site. Leave blank to keep the original file name.</p>
+                </div>
+
+                <!-- File Picker -->
+                <div>
+                    <label class="block text-xs font-bold text-gray-300 uppercase mb-1">Select Document (PDF / Doc)</label>
+                    <input type="file" id="fileInput" required class="w-full text-sm text-gray-400 file:mr-4 file:py-2.5 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-bold file:bg-amber-500 file:text-black hover:file:bg-amber-400 cursor-pointer bg-[#070b19] border border-white/10 rounded-xl" />
+                    <p id="fileNameDisplay" class="text-[11px] text-amber-300 mt-1"></p>
+                </div>
+
+                <button type="submit" id="submitBtn" class="w-full bg-amber-500 hover:bg-amber-400 text-black font-extrabold py-4 rounded-xl transition-all text-sm shadow-md flex items-center justify-center gap-2">
+                    <i class="fa-solid fa-cloud-arrow-up"></i> UPLOAD & PUBLISH FILE
+                </button>
+
+                <p id="uploadStatus" class="text-center text-xs font-medium text-amber-300"></p>
+            </form>
+        </div>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-[#050814] border-t border-white/10 py-6 text-center text-xs text-gray-500">
+        <p>&copy; 2026 Elevate Kenya Predictions. Admin Portal.</p>
+    </footer>
+
+    <!-- Supabase Client Script -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script>
+        const SUPABASE_URL = 'https://arymlhhimucgpxdqgovc.supabase.co';
+        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFyeW1saGhpbXVjZ3B4ZHFnb3ZjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODYzNzI4MTQsImV4cCI6MjEwMTk0ODgxNH0.oL0TgtEgPMJXDI2_cb9Ngv84Qh_zHCLzE0q2ohtHAQI';
+
+        // Fixed name collision by using 'supabaseClient'
+        const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+        const authSection = document.getElementById('authSection');
+        const dashboardSection = document.getElementById('dashboardSection');
+        const loginForm = document.getElementById('loginForm');
+        const logoutBtn = document.getElementById('logoutBtn');
+        const uploadForm = document.getElementById('uploadForm');
+
+        const sectionSelect = document.getElementById('sectionSelect');
+        const examCategoryGroup = document.getElementById('examCategoryGroup');
+        const examCategorySelect = document.getElementById('examCategorySelect');
+        const gradeGroup = document.getElementById('gradeGroup');
+        const gradeSelect = document.getElementById('gradeSelect');
+        const fileInput = document.getElementById('fileInput');
+        const fileNameDisplay = document.getElementById('fileNameDisplay');
+        const priceGroup = document.getElementById('priceGroup');
+        const priceInput = document.getElementById('priceInput');
+        const submitBtn = document.getElementById('submitBtn');
+
+        // Check authentication state on page load
+        async function checkUser() {
+            try {
+                const { data: { session } } = await supabaseClient.auth.getSession();
+                if (session) {
+                    authSection.style.display = 'none';
+                    dashboardSection.style.display = 'block';
+                    logoutBtn.style.display = 'block';
+                } else {
+                    authSection.style.display = 'block';
+                    dashboardSection.style.display = 'none';
+                    logoutBtn.style.display = 'none';
+                }
+            } catch (err) {
+                console.error("Session check error:", err);
+            }
+        }
+        checkUser();
+
+        // Login Handler
+        loginForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const email = document.getElementById('email').value.trim();
+            const password = document.getElementById('password').value;
+            const status = document.getElementById('authStatus');
+
+            status.textContent = 'Authenticating...';
+            status.className = "text-center text-xs text-amber-400 mt-2 font-medium";
+
+            try {
+                const { data, error } = await supabaseClient.auth.signInWithPassword({ email, password });
+
+                if (error) {
+                    status.className = "text-center text-xs text-red-400 mt-2 font-medium";
+                    status.textContent = error.message;
+                } else {
+                    status.textContent = '';
+                    checkUser();
+                }
+            } catch (err) {
+                status.className = "text-center text-xs text-red-400 mt-2 font-medium";
+                status.textContent = 'Unexpected error: ' + err.message;
+            }
+        });
+
+        // Logout Handler
+        logoutBtn.addEventListener('click', async () => {
+            await supabaseClient.auth.signOut();
+            checkUser();
+        });
+
+        // Dynamic Field Control based on Section Selection
+        sectionSelect.addEventListener('change', (e) => {
+            const val = e.target.value;
+
+            // Reset visibility
+            examCategoryGroup.style.display = 'none';
+            gradeGroup.style.display = 'none';
+            gradeSelect.innerHTML = '';
+
+            if (val === 'prediction') {
+                examCategoryGroup.style.display = 'block';
+            } else if (val === 'lower-primary') {
+                gradeGroup.style.display = 'block';
+                gradeSelect.innerHTML = `
+                    <option value="Playgroup">Playgroup</option>
+                    <option value="PP1">PP1</option>
+                    <option value="PP2">PP2</option>
+                    <option value="Grade 1">Grade 1</option>
+                    <option value="Grade 2">Grade 2</option>
+                    <option value="Grade 3">Grade 3</option>
+                `;
+            } else if (val === 'upper-primary') {
+                gradeGroup.style.display = 'block';
+                gradeSelect.innerHTML = `
+                    <option value="Grade 4">Grade 4</option>
+                    <option value="Grade 5">Grade 5</option>
+                    <option value="Grade 6">Grade 6</option>
+                `;
+            } else if (val === 'junior-school') {
+                gradeGroup.style.display = 'block';
+                gradeSelect.innerHTML = `
+                    <option value="Grade 7">Grade 7</option>
+                    <option value="Grade 8">Grade 8</option>
+                    <option value="Grade 9">Grade 9</option>
+                `;
+            } else if (val === 'senior-school') {
+                gradeGroup.style.display = 'block';
+                gradeSelect.innerHTML = `
+                    <option value="Form 1">Form 1</option>
+                    <option value="Form 2">Form 2</option>
+                    <option value="Form 3">Form 3</option>
+                    <option value="Form 4">Form 4</option>
+                `;
+            }
+        });
+
+        // Show/hide price field based on access type
+        document.querySelectorAll('input[name="accessType"]').forEach((radio) => {
+            radio.addEventListener('change', (e) => {
+                if (e.target.value === 'premium') {
+                    priceGroup.style.display = 'block';
+                    priceInput.required = true;
+                } else {
+                    priceGroup.style.display = 'none';
+                    priceInput.required = false;
+                    priceInput.value = '';
+                }
+            });
+        });
+
+        // Show selected file name so it's clear the picker actually registered a file
+        fileInput.addEventListener('change', () => {
+            if (fileInput.files.length > 0) {
+                const f = fileInput.files[0];
+                const sizeMB = (f.size / (1024 * 1024)).toFixed(2);
+                fileNameDisplay.textContent = `Selected: ${f.name} (${sizeMB} MB)`;
+            } else {
+                fileNameDisplay.textContent = '';
+            }
+        });
+
+        // Upload Form Submission Handler
+        uploadForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const status = document.getElementById('uploadStatus');
+            const file = fileInput.files[0];
+
+            if (!file) {
+                status.className = "text-center text-xs font-medium text-red-400";
+                status.textContent = 'Please choose a file first.';
+                return;
+            }
+
+            const section = sectionSelect.value;
+            if (!section) {
+                status.className = "text-center text-xs font-medium text-red-400";
+                status.textContent = 'Please choose a target section.';
+                return;
+            }
+
+            const accessType = document.querySelector('input[name="accessType"]:checked').value;
+            const price = accessType === 'premium' ? parseFloat(priceInput.value) : null;
+
+            if (accessType === 'premium' && (!price || price <= 0)) {
+                status.className = "text-center text-xs font-medium text-red-400";
+                status.textContent = 'Please enter a valid price for a premium file.';
+                return;
+            }
+
+            submitBtn.disabled = true;
+            status.className = "text-center text-xs font-medium text-amber-300";
+            status.textContent = 'Uploading file to Supabase storage...';
+
+            try {
+                const examCategory = section === 'prediction' ? examCategorySelect.value : section;
+                const grade = gradeSelect.value || null;
+                // The title the admin types becomes the display/file name used everywhere the file is fetched.
+                // Falls back to the original file name if left blank.
+                const displayName = document.getElementById('subjectInput').value.trim() || file.name;
+
+                const filePath = `${section}/${Date.now()}_${file.name}`;
+
+                // 1. Upload to Supabase Storage Bucket ('site-uploads')
+                const { error: storageError } = await supabaseClient.storage
+                    .from('site-uploads')
+                    .upload(filePath, file);
+
+                if (storageError) {
+                    status.className = "text-center text-xs font-medium text-red-400";
+                    status.textContent = 'Storage Upload Failed: ' + storageError.message;
+                    submitBtn.disabled = false;
+                    return;
+                }
+
+                // 2. Retrieve Public URL
+                const { data: { publicUrl } } = supabaseClient.storage
+                    .from('site-uploads')
+                    .getPublicUrl(filePath);
+
+                status.textContent = 'Saving file metadata to database...';
+
+                // 3. Insert record into database table ('files')
+                const { error: dbError } = await supabaseClient
+                    .from('files')
+                    .insert([{
+                        file_name: displayName,
+                        file_url: publicUrl,
+                        section: section,
+                        exam_category: examCategory,
+                        grade: grade,
+                        access_type: accessType,
+                        price: price
+                    }]);
+
+                if (dbError) {
+                    status.className = "text-center text-xs font-medium text-red-400";
+                    status.textContent = 'File uploaded, but database entry failed: ' + dbError.message;
+                } else {
+                    status.className = "text-center text-xs font-medium text-green-400";
+                    status.textContent = 'Successfully uploaded and published!';
+                    uploadForm.reset();
+                    examCategoryGroup.style.display = 'none';
+                    gradeGroup.style.display = 'none';
+                    priceGroup.style.display = 'none';
+                    fileNameDisplay.textContent = '';
+                }
+            } catch (err) {
+                status.className = "text-center text-xs font-medium text-red-400";
+                status.textContent = 'Unexpected error: ' + err.message;
+            } finally {
+                submitBtn.disabled = false;
+            }
+        });
+    </script>
+</body>
+</html>
