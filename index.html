@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Elevate Kenya Predictions</title>
+    <!-- Tailwind CSS for modern, responsive, and premium styling -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background-color: #0b1329;
+            color: #ffffff;
+            overflow-x: hidden;
+        }
+        /* Floating background graphics animation */
+        @keyframes floatSlow {
+            0% { transform: translateY(0px) rotate(0deg); }
+            50% { transform: translateY(-20px) rotate(5deg); }
+            100% { transform: translateY(0px) rotate(0deg); }
+        }
+        @keyframes floatReverse {
+            0% { transform: translateY(0px) rotate(0deg); }
+            50% { transform: translateY(25px) rotate(-8deg); }
+            100% { transform: translateY(0px) rotate(0deg); }
+        }
+        .animate-float-1 { animation: floatSlow 7s ease-in-out infinite; }
+        .animate-float-2 { animation: floatReverse 9s ease-in-out infinite; }
+
+        /* Premium glassmorphism effects */
+        .glass-card {
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 215, 0, 0.15);
+        }
+        .glass-card:hover {
+            border-color: rgba(255, 215, 0, 0.4);
+            box-shadow: 0 10px 30px -10px rgba(255, 215, 0, 0.15);
+        }
+    </style>
+</head>
+<body class="bg-[#070b19] text-gray-100 antialiased selection:bg-amber-500 selection:text-black">
+
+    <!-- Floating Background Educational Graphics (Books, Pens, Metrics) -->
+    <div class="fixed inset-0 pointer-events-none overflow-hidden z-0 opacity-15">
+        <div class="absolute top-12 left-10 text-amber-400 text-4xl animate-float-1"><i class="fa-solid fa-book"></i></div>
+        <div class="absolute top-1/4 right-12 text-blue-400 text-3xl animate-float-2"><i class="fa-solid fa-pen-nib"></i></div>
+        <div class="absolute top-1/3 left-1/4 text-amber-300 text-2xl animate-float-2"><i class="fa-solid fa-graduation-cap"></i></div>
+        <div class="absolute bottom-1/3 right-1/4 text-blue-300 text-4xl animate-float-1"><i class="fa-solid fa-file-lines"></i></div>
+        <div class="absolute bottom-20 left-16 text-amber-500 text-3xl animate-float-2"><i class="fa-solid fa-calculator"></i></div>
+        <div class="absolute top-2/3 right-10 text-blue-500 text-2xl animate-float-1"><i class="fa-solid fa-book-open-reader"></i></div>
+    </div>
+
+    <!-- Navigation Bar -->
+    <nav class="sticky top-0 z-50 bg-[#070b19]/90 backdrop-blur-md border-b border-white/10">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
+            <div class="flex items-center space-x-3">
+                <img src="logo.png" alt="Elevate Kenya Logo" class="h-12 w-12 object-contain drop-shadow-[0_0_10px_rgba(255,215,0,0.3)]">
+                <span class="font-extrabold text-lg sm:text-xl tracking-wider text-white">ELEVATE KENYA PREDICTIONS</span>
+            </div>
+            <!-- Desktop Nav Links -->
+            <div class="hidden md:flex items-center space-x-8 text-sm font-semibold">
+                <a href="#resources" class="hover:text-amber-400 transition-colors">Resources</a>
+                <a href="#founder" class="hover:text-amber-400 transition-colors">Founder</a>
+                <a href="#contact" class="hover:text-amber-400 transition-colors">Contact</a>
+                <a href="https://wa.me/254746357349" target="_blank" class="bg-gradient-to-r from-amber-500 to-amber-600 text-black px-5 py-2.5 rounded-full font-bold hover:shadow-[0_0_20px_rgba(245,158,11,0.4)] transition-all">
+                    <i class="fa-brands fa-whatsapp mr-2"></i> Chat Support
+                </a>
+            </div>
+            <!-- Mobile Menu Button -->
+            <button id="menuBtn" class="md:hidden text-2xl text-amber-400 focus:outline-none">
+                <i class="fa-solid fa-bars"></i>
+            </button>
+        </div>
+        <!-- Mobile Dropdown Menu -->
+        <div id="mobileMenu" class="hidden md:hidden bg-[#0b1329] border-b border-white/10 px-6 py-4 space-y-3">
+            <a href="#resources" class="block text-base font-semibold hover:text-amber-400">Resources</a>
+            <a href="#founder" class="block text-base font-semibold hover:text-amber-400">Founder</a>
+            <a href="#contact" class="block text-base font-semibold hover:text-amber-400">Contact</a>
+            <a href="https://wa.me/254746357349" target="_blank" class="inline-block w-full text-center bg-amber-500 text-black py-2.5 rounded-xl font-bold">
+                <i class="fa-brands fa-whatsapp mr-2"></i> WhatsApp Support
+            </a>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <header class="relative z-10 max-w-5xl mx-auto px-4 pt-16 pb-20 text-center">
+        <div class="inline-block mb-4 px-4 py-1.5 rounded-full bg-amber-500/10 border border-amber-500/30 text-amber-400 text-xs sm:text-sm font-bold tracking-widest uppercase">
+            National Assessment Solutions
+        </div>
+        <h1 class="text-4xl sm:text-6xl lg:text-7xl font-extrabold tracking-tight text-white mb-6 uppercase">
+            Elevate Kenya <span class="text-transparent bg-clip-text bg-gradient-to-r from-amber-400 to-amber-200">Predictions</span>
+        </h1>
+        <div class="w-24 h-1 bg-amber-500 mx-auto mb-6 rounded-full"></div>
+        <p class="text-xl sm:text-2xl italic font-medium text-amber-100/90 mb-6">
+            "Striving for the peak of potential"
+        </p>
+        <p class="max-w-2xl mx-auto text-gray-300 text-base sm:text-lg mb-10 leading-relaxed">
+            Specialized National Assessment Solutions for Primary, Junior School, and Senior High School Metrics.
+        </p>
+        <div class="flex flex-col sm:flex-row justify-center items-center gap-4">
+            <a href="#resources" class="w-full sm:w-auto bg-amber-500 hover:bg-amber-400 text-black font-extxl font-bold px-8 py-4 rounded-xl shadow-[0_0_25px_rgba(245,158,11,0.3)] transition-all transform hover:-translate-y-0.5">
+                EXPLORE RESOURCES
+            </a>
+            <a href="prediction-papers.html" class="w-full sm:w-auto bg-[#0b1329] hover:bg-white/10 border-2 border-amber-500/60 text-amber-400 font-bold px-8 py-4 rounded-xl transition-all flex items-center justify-center gap-3">
+                <span>VIEW PREDICTION PAPERS</span>
+                <i class="fa-solid fa-file-arrow-down animate-bounce"></i>
+            </a>
+        </div>
+    </header>
+
+    <!-- Curriculum Scope & Revision Materials -->
+    <section id="resources" class="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+        <div class="text-center max-w-3xl mx-auto mb-16">
+            <span class="text-amber-400 font-bold tracking-widest text-xs uppercase bg-amber-500/10 px-3 py-1 rounded-full border border-amber-500/20">Curriculum Scope</span>
+            <h2 class="text-3xl sm:text-4xl font-extrabold mt-3 text-white">REVISION MATERIALS</h2>
+            <p class="text-gray-300 mt-3 text-sm sm:text-base">
+                Access complete structured curriculum bundles and diagnostic indicators updated to modern standards.
+            </p>
+        </div>
+
+        <!-- Cards Grid -->
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            
+            <!-- Lower Primary -->
+            <div class="glass-card rounded-2xl p-8 flex flex-col justify-between transition-all duration-300">
+                <div>
+                    <div class="w-14 h-14 bg-amber-500/10 border border-amber-500/30 rounded-2xl flex items-center justify-center text-amber-400 text-2xl mb-6 shadow-inner">
+                        <i class="fa-solid fa-child-reaching"></i>
+                    </div>
+                    <h3 class="text-xl font-bold text-white mb-3">LOWER PRIMARY</h3>
+                    <p class="text-gray-300 text-sm leading-relaxed mb-6">
+                        Foundational diagnostic matrices from Playgroup up to Grade 3 tiers.
+                    </p>
+                </div>
+                <a href="lower-primary.html" class="w-full text-center bg-[#0b1329] hover:bg-amber-500 hover:text-black border border-amber-500/50 text-amber-400 font-bold py-3.5 rounded-xl transition-all shadow-sm">
+                    ACCESS MATERIALS
+                </a>
+            </div>
+
+            <!-- Upper Primary -->
+            <div class="glass-card rounded-2xl p-8 flex flex-col justify-between transition-all duration-300">
+                <div>
+                    <div class="w-14 h-14 bg-blue-500/10 border border-blue-500/30 rounded-2xl flex items-center justify-center text-blue-400 text-2xl mb-6 shadow-inner">
+                        <i class="fa-solid fa-book-bookmark"></i>
+                    </div>
+                    <h3 class="text-xl font-bold text-white mb-3">UPPER PRIMARY</h3>
+                    <p class="text-gray-300 text-sm leading-relaxed mb-6">
+                        Intermediate curriculum objectives aligned for Grade 4 to Grade 6 setups.
+                    </p>
+                </div>
+                <a href="upper-primary.html" class="w-full text-center bg-[#0b1329] hover:bg-amber-500 hover:text-black border border-amber-500/50 text-amber-400 font-bold py-3.5 rounded-xl transition-all shadow-sm">
+                    ACCESS MATERIALS
+                </a>
+            </div>
+
+            <!-- Junior School -->
+            <div class="glass-card rounded-2xl p-8 flex flex-col justify-between transition-all duration-300">
+                <div>
+                    <div class="w-14 h-14 bg-amber-500/10 border border-amber-500/30 rounded-2xl flex items-center justify-center text-amber-400 text-2xl mb-6 shadow-inner">
+                        <i class="fa-solid fa-school"></i>
+                    </div>
+                    <h3 class="text-xl font-bold text-white mb-3">JUNIOR SCHOOL</h3>
+                    <p class="text-gray-300 text-sm leading-relaxed mb-6">
+                        Comprehensive tracking sets tailored cleanly for Grade 7 through Grade 9 nodes.
+                    </p>
+                </div>
+                <a href="junior-school.html" class="w-full text-center bg-[#0b1329] hover:bg-amber-500 hover:text-black border border-amber-500/50 text-amber-400 font-bold py-3.5 rounded-xl transition-all shadow-sm">
+                    ACCESS MATERIALS
+                </a>
+            </div>
+
+            <!-- Senior School -->
+            <div class="glass-card rounded-2xl p-8 flex flex-col justify-between transition-all duration-300">
+                <div>
+                    <div class="w-14 h-14 bg-blue-500/10 border border-blue-500/30 rounded-2xl flex items-center justify-center text-blue-400 text-2xl mb-6 shadow-inner">
+                        <i class="fa-solid fa-graduation-cap"></i>
+                    </div>
+                    <h3 class="text-xl font-bold text-white mb-3">SENIOR SCHOOL</h3>
+                    <p class="text-gray-300 text-sm leading-relaxed mb-6">
+                        Form 1 to Form 4 high-school level resources targeting key milestones.
+                    </p>
+                </div>
+                <a href="senior-school.html" class="w-full text-center bg-[#0b1329] hover:bg-amber-500 hover:text-black border border-amber-500/50 text-amber-400 font-bold py-3.5 rounded-xl transition-all shadow-sm">
+                    ACCESS MATERIALS
+                </a>
+            </div>
+
+            <!-- Prediction Exams (Highlighted Card) -->
+            <div class="glass-card rounded-2xl p-8 flex flex-col justify-between transition-all duration-300 md:col-span-2 lg:col-span-2 border-2 border-amber-500/40 bg-gradient-to-br from-amber-500/5 to-transparent">
+                <div>
+                    <div class="w-14 h-14 bg-amber-500/20 border border-amber-500/50 rounded-2xl flex items-center justify-center text-amber-400 text-2xl mb-6 shadow-inner">
+                        <i class="fa-solid fa-bullseye"></i>
+                    </div>
+                    <h3 class="text-2xl font-extrabold text-white mb-3">PREDICTION EXAMS</h3>
+                    <p class="text-gray-300 text-sm sm:text-base leading-relaxed mb-6">
+                        Pristine national-benchmark prediction models mapped using flawless LaTeX layout configurations for optimal score evaluation.
+                    </p>
+                </div>
+                <a href="prediction-papers.html" class="w-full text-center bg-amber-500 hover:bg-amber-400 text-black font-extrabold py-4 rounded-xl transition-all shadow-[0_0_20px_rgba(245,158,11,0.2)]">
+                    ACCESS MATERIALS
+                </a>
+            </div>
+
+        </div>
+    </section>
+
+    <!-- Founder Profile Section -->
+    <section id="founder" class="relative z-10 max-w-4xl mx-auto px-4 py-20">
+        <div class="glass-card rounded-3xl p-8 sm:p-12 text-center relative overflow-hidden border border-amber-500/30">
+            <div class="absolute -top-24 -right-24 w-48 h-48 bg-amber-500/10 rounded-full blur-3xl pointer-events-none"></div>
+            
+            <div class="inline-block mb-6 px-4 py-1 rounded-full bg-amber-500 text-black font-extrabold text-xs tracking-widest uppercase">
+                FOUNDER PROFILE
+            </div>
+
+            <!-- Profile Image -->
+            <div class="relative w-36 h-36 mx-auto mb-6">
+                <div class="absolute inset-0 rounded-full bg-gradient-to-tr from-amber-500 to-blue-500 animate-spin" style="animation-duration: 15s;"></div>
+                <div class="absolute inset-1 rounded-full bg-[#070b19] overflow-hidden">
+                    <img src="profile.jpg" alt="Peter Musau Mutua" class="w-full h-full object-cover">
+                </div>
+            </div>
+
+            <h3 class="text-2xl sm:text-3xl font-extrabold text-white mb-4">PETER MUSAU MUTUA</h3>
+            
+            <p class="text-gray-300 text-sm sm:text-base leading-relaxed max-w-2xl mx-auto mb-8">
+                As a STEM educator and developer, I founded Elevate Kenya Predictions to bridge academic assessment formatting gaps across schools nationwide. Backed by a high-calibred framework built around pristine LaTeX code configurations, our platform equips instructors, institutions, and candidates with accurate predictive indicators to maximize score indices during national evaluation intervals.
+            </p>
+
+            <div class="pt-6 border-t border-white/10 flex flex-wrap justify-center gap-4">
+                <a href="https://wa.me/254746357349" target="_blank" class="flex items-center gap-2 bg-[#25D366]/20 border border-[#25D366]/50 text-[#25D366] px-5 py-2.5 rounded-xl font-bold text-sm hover:bg-[#25D366] hover:text-black transition-all">
+                    <i class="fa-brands fa-whatsapp text-lg">+254 746 357 349</i>
+                </a>
+                <a href="https://www.facebook.com/profile.php?id=61582117877169" target="_blank" class="flex items-center gap-2 bg-[#1877F2]/20 border border-[#1877F2]/50 text-[#1877F2] px-5 py-2.5 rounded-xl font-bold text-sm hover:bg-[#1877F2] hover:text-white transition-all">
+                    <i class="fa-brands fa-facebook text-lg">Facebook Page</i>
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer & Contact Details -->
+    <footer id="contact" class="relative z-10 bg-[#050814] border-t border-white/10 pt-16 pb-12">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10 mb-12">
+                
+                <!-- Col 1: Brand Info -->
+                <div>
+                    <div class="flex items-center space-x-3 mb-4">
+                        <img src="logo.png" alt="Logo" class="h-10 w-10 object-contain">
+                        <span class="font-extrabold text-base tracking-wider text-white">ELEVATE KENYA</span>
+                    </div>
+                    <p class="text-gray-400 text-sm leading-relaxed mb-6">
+                        Transforming test preparation with standard, highly precise evaluation resources for specialized education metrics.
+                    </p>
+                </div>
+
+                <!-- Col 2: Contact Info -->
+                <div>
+                    <h4 class="text-white font-bold text-base mb-4 tracking-wide uppercase">CONTACT INFO</h4>
+                    <ul class="space-y-3 text-sm text-gray-300">
+                        <li class="flex items-center gap-3">
+                            <i class="fa-solid fa-location-dot text-amber-400 w-5"></i>
+                            <span>Likoni, Mombasa, Kenya</span>
+                        </li>
+                        <li class="flex items-center gap-3">
+                            <i class="fa-solid fa-envelope text-amber-400 w-5"></i>
+                            <a href="mailto:pm6482545@gmail.com" class="hover:text-amber-400 transition-colors">pm6482545@gmail.com</a>
+                        </li>
+                        <li class="flex items-center gap-3">
+                            <i class="fa-solid fa-phone text-amber-400 w-5"></i>
+                            <a href="tel:0746357349" class="hover:text-amber-400 transition-colors">0746357349</a>
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- Col 3: Official Channels -->
+                <div>
+                    <h4 class="text-white font-bold text-base mb-4 tracking-wide uppercase">OFFICIAL CHANNELS</h4>
+                    <div class="space-y-3">
+                        <a href="https://wa.me/254746357349" target="_blank" class="flex items-center justify-center gap-2 w-full bg-[#25D366] text-black font-bold py-3 rounded-xl hover:opacity-90 transition-all text-sm shadow-md">
+                            <i class="fa-brands fa-whatsapp text-lg"></i> WHATSAPP SUPPORT
+                        </a>
+                        <a href="https://www.facebook.com/profile.php?id=61582117877169" target="_blank" class="flex items-center justify-center gap-2 w-full bg-[#1877F2] text-white font-bold py-3 rounded-xl hover:opacity-90 transition-all text-sm shadow-md">
+                            <i class="fa-brands fa-facebook text-lg"></i> FACEBOOK PAGE
+                        </a>
+                    </div>
+                </div>
+
+            </div>
+
+            <div class="border-t border-white/10 pt-8 flex flex-col sm:flex-row items-center justify-between text-xs text-gray-500 gap-4">
+                <p>&copy; 2026 Elevate Kenya Predictions. All Rights Reserved.</p>
+                <p class="italic text-amber-400/80 font-medium">"STRIVING FOR THE PEAK OF POTENTIAL"</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Mobile Menu Script -->
+    <script>
+        const menuBtn = document.getElementById('menuBtn');
+        const mobileMenu = document.getElementById('mobileMenu');
+
+        menuBtn.addEventListener('click', () => {
+            mobileMenu.classList.toggle('hidden');
+        });
+    </script>
+</body>
+</html>
