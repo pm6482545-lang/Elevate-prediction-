@@ -342,32 +342,26 @@
             try {
                 const examCategory = section === 'prediction' ? examCategorySelect.value : section;
                 const grade = gradeSelect.value || null;
-                // The title the admin types becomes the display/file name used everywhere the file is fetched.
-                // Falls back to the original file name if left blank.
                 const displayName = document.getElementById('subjectInput').value.trim() || file.name;
 
-                // Sanitize the file name used in the storage path: spaces and special
-                // characters (parentheses, #, %, &, etc.) in the original file name can
-                // break the upload request URL and surface as a generic "Failed to fetch".
-                // The original name is preserved separately as displayName/subject above.
                 const extMatch = file.name.match(/\.[^.]+$/);
                 const ext = extMatch ? extMatch[0] : '';
                 const baseName = ext ? file.name.slice(0, -ext.length) : file.name;
                 const safeBaseName = baseName
                     .normalize('NFKD')
-                    .replace(/[^\w\s-]/g, '')   // strip anything not a letter/number/underscore/dash/space
+                    .replace(/[^\w\s-]/g, '')
                     .trim()
-                    .replace(/\s+/g, '-')        // spaces -> dashes
+                    .replace(/\s+/g, '-')
                     .slice(0, 80) || 'file';
                 const safeFileName = `${safeBaseName}${ext}`;
 
                 const filePath = `${section}/${Date.now()}_${safeFileName}`;
 
-                // 1. Upload to Supabase Storage Bucket ('site-uploads')
+                // 1. Upload to Supabase Storage Bucket ('SITE-UPLOADS')
                 let storageError;
                 try {
                     const result = await supabaseClient.storage
-                        .from('site-uploads')
+                        .from('SITE-UPLOADS')
                         .upload(filePath, file, {
                             contentType: file.type || 'application/octet-stream',
                             upsert: false
@@ -375,7 +369,7 @@
                     storageError = result.error;
                 } catch (networkErr) {
                     status.className = "text-center text-xs font-medium text-red-400";
-                    status.textContent = 'Network error reaching Supabase storage: ' + networkErr.message + '. Check your internet connection, ad blockers/extensions, and that the bucket "site-uploads" allows uploads.';
+                    status.textContent = 'Network error reaching Supabase storage: ' + networkErr.message + '. Check your internet connection, ad blockers/extensions, and that the bucket "SITE-UPLOADS" allows uploads.';
                     submitBtn.disabled = false;
                     return;
                 }
@@ -389,7 +383,7 @@
 
                 // 2. Retrieve Public URL
                 const { data: { publicUrl } } = supabaseClient.storage
-                    .from('site-uploads')
+                    .from('SITE-UPLOADS')
                     .getPublicUrl(filePath);
 
                 status.textContent = 'Saving file metadata to database...';
