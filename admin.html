@@ -101,7 +101,6 @@
                     <label class="block text-xs font-bold text-amber-400 uppercase mb-1">Grade Level</label>
                     <select id="gradeSelect" class="w-full bg-[#070b19] border border-white/10 rounded-xl px-4 py-3 text-sm text-white focus:border-amber-500 focus:outline-none">
                         <option value="">-- Select Grade --</option>
-                        <!-- Populated dynamically based on section -->
                     </select>
                 </div>
 
@@ -126,26 +125,19 @@
 
                 <!-- Price (only for Premium) -->
                 <div id="priceGroup" style="display: none;">
-                    <label class="block text-xs font-bold text-amber-400 uppercase mb-1">Price (KES)</label>
+                    <label class="block text-xs font-bold text-amber-400 uppercase mb-1">Price per File (KES)</label>
                     <input type="number" id="priceInput" min="1" step="1" placeholder="e.g. 50" class="w-full bg-[#070b19] border border-white/10 rounded-xl px-4 py-3 text-sm text-white focus:border-amber-500 focus:outline-none" />
                 </div>
 
-                <!-- Title Input -->
+                <!-- Multi-File Picker -->
                 <div>
-                    <label class="block text-xs font-bold text-gray-300 uppercase mb-1">Title (shown on site)</label>
-                    <input type="text" id="subjectInput" placeholder="e.g. Mathematics Form 4 Paper 1" class="w-full bg-[#070b19] border border-white/10 rounded-xl px-4 py-3 text-sm text-white focus:border-amber-500 focus:outline-none" />
-                    <p class="text-[11px] text-gray-500 mt-1">This exact text becomes the file's name in Supabase and is what shows up wherever the file is fetched on your site. Leave blank to keep the original file name.</p>
-                </div>
-
-                <!-- File Picker -->
-                <div>
-                    <label class="block text-xs font-bold text-gray-300 uppercase mb-1">Select Document (PDF / Doc)</label>
-                    <input type="file" id="fileInput" required class="w-full text-sm text-gray-400 file:mr-4 file:py-2.5 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-bold file:bg-amber-500 file:text-black hover:file:bg-amber-400 cursor-pointer bg-[#070b19] border border-white/10 rounded-xl" />
+                    <label class="block text-xs font-bold text-gray-300 uppercase mb-1">Select Documents (PDF / Doc - Multiple allowed)</label>
+                    <input type="file" id="fileInput" required multiple class="w-full text-sm text-gray-400 file:mr-4 file:py-2.5 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-bold file:bg-amber-500 file:text-black hover:file:bg-amber-400 cursor-pointer bg-[#070b19] border border-white/10 rounded-xl" />
                     <p id="fileNameDisplay" class="text-[11px] text-amber-300 mt-1"></p>
                 </div>
 
                 <button type="submit" id="submitBtn" class="w-full bg-amber-500 hover:bg-amber-400 text-black font-extrabold py-4 rounded-xl transition-all text-sm shadow-md flex items-center justify-center gap-2">
-                    <i class="fa-solid fa-cloud-arrow-up"></i> UPLOAD & PUBLISH FILE
+                    <i class="fa-solid fa-cloud-arrow-up"></i> UPLOAD & PUBLISH FILES
                 </button>
 
                 <p id="uploadStatus" class="text-center text-xs font-medium text-amber-300 break-words px-2"></p>
@@ -303,23 +295,22 @@
 
         fileInput.addEventListener('change', () => {
             if (fileInput.files.length > 0) {
-                const f = fileInput.files[0];
-                const sizeMB = (f.size / (1024 * 1024)).toFixed(2);
-                fileNameDisplay.textContent = `Selected: ${f.name} (${sizeMB} MB)`;
+                const totalFiles = fileInput.files.length;
+                fileNameDisplay.textContent = `Selected: ${totalFiles} file(s) ready for upload`;
             } else {
                 fileNameDisplay.textContent = '';
             }
         });
 
-        // Mobile-Resilient Upload Handler (Direct Native Fetch)
+        // Multi-File Upload Handler
         uploadForm.addEventListener('submit', async (e) => {
             e.preventDefault();
             const status = document.getElementById('uploadStatus');
-            const file = fileInput.files[0];
+            const files = fileInput.files;
 
-            if (!file) {
+            if (!files || files.length === 0) {
                 status.className = "text-center text-xs font-medium text-red-400 break-words px-2";
-                status.textContent = 'Please choose a file first.';
+                status.textContent = 'Please choose at least one file.';
                 return;
             }
 
@@ -335,90 +326,95 @@
 
             if (accessType === 'premium' && (!price || price <= 0)) {
                 status.className = "text-center text-xs font-medium text-red-400 break-words px-2";
-                status.textContent = 'Please enter a valid price for a premium file.';
+                status.textContent = 'Please enter a valid price for premium files.';
                 return;
             }
 
             submitBtn.disabled = true;
-            status.className = "text-center text-xs font-medium text-amber-300 break-words px-2";
-            status.textContent = 'Uploading file to Supabase...';
+            const totalFiles = files.length;
+            let successCount = 0;
 
-            try {
-                const examCategory = section === 'prediction' ? examCategorySelect.value : section;
-                const grade = gradeSelect.value || null;
-                const displayName = document.getElementById('subjectInput').value.trim() || file.name;
+            const examCategory = section === 'prediction' ? examCategorySelect.value : section;
+            const grade = gradeSelect.value || null;
 
-                const extMatch = file.name.match(/\.[^.]+$/);
-                const ext = extMatch ? extMatch[0] : '';
-                const baseName = ext ? file.name.slice(0, -ext.length) : file.name;
-                const safeBaseName = baseName
-                    .normalize('NFKD')
-                    .replace(/[^\w\s-]/g, '')
-                    .trim()
-                    .replace(/\s+/g, '-')
-                    .slice(0, 80) || 'file';
-                const safeFileName = `${safeBaseName}${ext}`;
+            const { data: { session } } = await supabaseClient.auth.getSession();
+            const token = session ? session.access_token : SUPABASE_ANON_KEY;
 
-                const filePath = `${section}/${Date.now()}_${safeFileName}`;
+            for (let i = 0; i < totalFiles; i++) {
+                const file = files[i];
+                status.className = "text-center text-xs font-medium text-amber-300 break-words px-2";
+                status.textContent = `Uploading file ${i + 1} of ${totalFiles}: "${file.name}"...`;
 
-                // Direct fetch call bypassing JS SDK upload wrappers to prevent mobile browser CORS drops
-                const uploadUrl = `${SUPABASE_URL}/storage/v1/object/SITE-UPLOADS/${filePath}`;
-                
-                const { data: { session } } = await supabaseClient.auth.getSession();
-                const token = session ? session.access_token : SUPABASE_ANON_KEY;
+                try {
+                    // Title automatically takes exact original filename
+                    const displayName = file.name;
 
-                const response = await fetch(uploadUrl, {
-                    method: 'POST',
-                    headers: {
-                        'Authorization': `Bearer ${token}`,
-                        'apiKey': SUPABASE_ANON_KEY,
-                        'x-upsert': 'false',
-                        'Content-Type': file.type || 'application/octet-stream'
-                    },
-                    body: file
-                });
+                    const extMatch = file.name.match(/\.[^.]+$/);
+                    const ext = extMatch ? extMatch[0] : '';
+                    const baseName = ext ? file.name.slice(0, -ext.length) : file.name;
+                    const safeBaseName = baseName
+                        .normalize('NFKD')
+                        .replace(/[^\w\s-]/g, '')
+                        .trim()
+                        .replace(/\s+/g, '-')
+                        .slice(0, 80) || 'file';
+                    const safeFileName = `${safeBaseName}${ext}`;
 
-                if (!response.ok) {
-                    const errJson = await response.json().catch(() => ({}));
-                    throw new Error(errJson.message || `HTTP ${response.status} Upload Failed`);
+                    const filePath = `${section}/${Date.now()}_${safeFileName}`;
+                    const uploadUrl = `${SUPABASE_URL}/storage/v1/object/SITE-UPLOADS/${filePath}`;
+
+                    const response = await fetch(uploadUrl, {
+                        method: 'POST',
+                        headers: {
+                            'Authorization': `Bearer ${token}`,
+                            'apiKey': SUPABASE_ANON_KEY,
+                            'x-upsert': 'false',
+                            'Content-Type': file.type || 'application/octet-stream'
+                        },
+                        body: file
+                    });
+
+                    if (!response.ok) {
+                        const errJson = await response.json().catch(() => ({}));
+                        throw new Error(errJson.message || `HTTP ${response.status} Upload Failed`);
+                    }
+
+                    const publicUrl = `${SUPABASE_URL}/storage/v1/object/public/SITE-UPLOADS/${filePath}`;
+
+                    const { error: dbError } = await supabaseClient
+                        .from('files')
+                        .insert([{
+                            file_name: displayName,
+                            file_url: publicUrl,
+                            section: section,
+                            exam_category: examCategory,
+                            grade: grade,
+                            access_type: accessType,
+                            price: price
+                        }]);
+
+                    if (dbError) throw new Error(dbError.message);
+
+                    successCount++;
+                } catch (err) {
+                    console.error(`Error uploading ${file.name}:`, err);
                 }
-
-                // Public URL output
-                const publicUrl = `${SUPABASE_URL}/storage/v1/object/public/SITE-UPLOADS/${filePath}`;
-
-                status.textContent = 'Saving file metadata to database...';
-
-                // Save record to 'files' table
-                const { error: dbError } = await supabaseClient
-                    .from('files')
-                    .insert([{
-                        file_name: displayName,
-                        file_url: publicUrl,
-                        section: section,
-                        exam_category: examCategory,
-                        grade: grade,
-                        access_type: accessType,
-                        price: price
-                    }]);
-
-                if (dbError) {
-                    status.className = "text-center text-xs font-medium text-red-400 break-words px-2";
-                    status.textContent = 'Database Error: ' + dbError.message;
-                } else {
-                    status.className = "text-center text-xs font-medium text-green-400 break-words px-2";
-                    status.textContent = 'Successfully uploaded and published!';
-                    uploadForm.reset();
-                    examCategoryGroup.style.display = 'none';
-                    gradeGroup.style.display = 'none';
-                    priceGroup.style.display = 'none';
-                    fileNameDisplay.textContent = '';
-                }
-            } catch (err) {
-                status.className = "text-center text-xs font-medium text-red-400 break-words px-2";
-                status.textContent = 'Error: ' + err.message;
-            } finally {
-                submitBtn.disabled = false;
             }
+
+            if (successCount === totalFiles) {
+                status.className = "text-center text-xs font-medium text-green-400 break-words px-2";
+                status.textContent = `Successfully uploaded and published all ${successCount} file(s)!`;
+                uploadForm.reset();
+                examCategoryGroup.style.display = 'none';
+                gradeGroup.style.display = 'none';
+                priceGroup.style.display = 'none';
+                fileNameDisplay.textContent = '';
+            } else {
+                status.className = "text-center text-xs font-medium text-amber-400 break-words px-2";
+                status.textContent = `Uploaded ${successCount} of ${totalFiles} file(s). Check browser console for details on failed files.`;
+            }
+
+            submitBtn.disabled = false;
         });
     </script>
 </body>
