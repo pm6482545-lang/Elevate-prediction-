@@ -163,9 +163,16 @@
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script>
         const SUPABASE_URL = 'https://arymlhhimucgpxdqgovc.supabase.co';
-        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFyeW1saGhpbXVjZ3B4ZHFnb3ZjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODYzNzI4MTQsImV4cCI6MjEwMTk0ODgxNH0.oL0TgtEgPMJXDI2_cb9Ngv84Qh_zHCLzE0q2ohtHAQI';
+        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFyeW1saGhpbXVjZ3B4ZHFnb3ZjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODYzNzI4MTQsImV4cCI6MjE0MTk0ODgxNH0.oL0TgtEgPMJXDI2_cb9Ngv84Qh_zHCLzE0q2ohtHAQI';
 
-        const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+        // Initialize Supabase Client
+        const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
+            global: {
+                headers: {
+                    'x-client-info': 'supabase-js-web'
+                }
+            }
+        });
 
         const authSection = document.getElementById('authSection');
         const dashboardSection = document.getElementById('dashboardSection');
@@ -304,7 +311,7 @@
             }
         });
 
-        // Detailed Upload Handler designed to debug mobile errors
+        // Mobile-Resilient Upload Handler (Direct Native Fetch)
         uploadForm.addEventListener('submit', async (e) => {
             e.preventDefault();
             const status = document.getElementById('uploadStatus');
@@ -334,7 +341,7 @@
 
             submitBtn.disabled = true;
             status.className = "text-center text-xs font-medium text-amber-300 break-words px-2";
-            status.textContent = 'Uploading file to Supabase storage...';
+            status.textContent = 'Uploading file to Supabase...';
 
             try {
                 const examCategory = section === 'prediction' ? examCategorySelect.value : section;
@@ -354,29 +361,34 @@
 
                 const filePath = `${section}/${Date.now()}_${safeFileName}`;
 
-                // 1. Upload to Supabase Storage Bucket ('SITE-UPLOADS')
-                const { data: storageData, error: storageError } = await supabaseClient.storage
-                    .from('SITE-UPLOADS')
-                    .upload(filePath, file, {
-                        contentType: file.type || 'application/octet-stream',
-                        upsert: false
-                    });
+                // Direct fetch call bypassing JS SDK upload wrappers to prevent mobile browser CORS drops
+                const uploadUrl = `${SUPABASE_URL}/storage/v1/object/SITE-UPLOADS/${filePath}`;
+                
+                const { data: { session } } = await supabaseClient.auth.getSession();
+                const token = session ? session.access_token : SUPABASE_ANON_KEY;
 
-                if (storageError) {
-                    status.className = "text-center text-xs font-medium text-red-400 break-words px-2";
-                    status.textContent = 'Storage Error [' + (storageError.statusCode || 'N/A') + ']: ' + storageError.message;
-                    submitBtn.disabled = false;
-                    return;
+                const response = await fetch(uploadUrl, {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'apiKey': SUPABASE_ANON_KEY,
+                        'x-upsert': 'false',
+                        'Content-Type': file.type || 'application/octet-stream'
+                    },
+                    body: file
+                });
+
+                if (!response.ok) {
+                    const errJson = await response.json().catch(() => ({}));
+                    throw new Error(errJson.message || `HTTP ${response.status} Upload Failed`);
                 }
 
-                // 2. Retrieve Public URL
-                const { data: { publicUrl } } = supabaseClient.storage
-                    .from('SITE-UPLOADS')
-                    .getPublicUrl(filePath);
+                // Public URL output
+                const publicUrl = `${SUPABASE_URL}/storage/v1/object/public/SITE-UPLOADS/${filePath}`;
 
                 status.textContent = 'Saving file metadata to database...';
 
-                // 3. Insert record into database table ('files')
+                // Save record to 'files' table
                 const { error: dbError } = await supabaseClient
                     .from('files')
                     .insert([{
@@ -403,7 +415,7 @@
                 }
             } catch (err) {
                 status.className = "text-center text-xs font-medium text-red-400 break-words px-2";
-                status.textContent = 'Error: ' + err.name + ' - ' + err.message;
+                status.textContent = 'Error: ' + err.message;
             } finally {
                 submitBtn.disabled = false;
             }
