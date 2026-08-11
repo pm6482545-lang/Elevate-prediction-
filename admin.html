@@ -148,7 +148,7 @@
                     <i class="fa-solid fa-cloud-arrow-up"></i> UPLOAD & PUBLISH FILE
                 </button>
 
-                <p id="uploadStatus" class="text-center text-xs font-medium text-amber-300"></p>
+                <p id="uploadStatus" class="text-center text-xs font-medium text-amber-300 break-words px-2"></p>
             </form>
         </div>
 
@@ -165,7 +165,6 @@
         const SUPABASE_URL = 'https://arymlhhimucgpxdqgovc.supabase.co';
         const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFyeW1saGhpbXVjZ3B4ZHFnb3ZjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODYzNzI4MTQsImV4cCI6MjEwMTk0ODgxNH0.oL0TgtEgPMJXDI2_cb9Ngv84Qh_zHCLzE0q2ohtHAQI';
 
-        // Fixed name collision by using 'supabaseClient'
         const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
         const authSection = document.getElementById('authSection');
@@ -240,7 +239,6 @@
         sectionSelect.addEventListener('change', (e) => {
             const val = e.target.value;
 
-            // Reset visibility
             examCategoryGroup.style.display = 'none';
             gradeGroup.style.display = 'none';
             gradeSelect.innerHTML = '';
@@ -296,7 +294,6 @@
             });
         });
 
-        // Show selected file name so it's clear the picker actually registered a file
         fileInput.addEventListener('change', () => {
             if (fileInput.files.length > 0) {
                 const f = fileInput.files[0];
@@ -307,21 +304,21 @@
             }
         });
 
-        // Upload Form Submission Handler
+        // Detailed Upload Handler designed to debug mobile errors
         uploadForm.addEventListener('submit', async (e) => {
             e.preventDefault();
             const status = document.getElementById('uploadStatus');
             const file = fileInput.files[0];
 
             if (!file) {
-                status.className = "text-center text-xs font-medium text-red-400";
+                status.className = "text-center text-xs font-medium text-red-400 break-words px-2";
                 status.textContent = 'Please choose a file first.';
                 return;
             }
 
             const section = sectionSelect.value;
             if (!section) {
-                status.className = "text-center text-xs font-medium text-red-400";
+                status.className = "text-center text-xs font-medium text-red-400 break-words px-2";
                 status.textContent = 'Please choose a target section.';
                 return;
             }
@@ -330,13 +327,13 @@
             const price = accessType === 'premium' ? parseFloat(priceInput.value) : null;
 
             if (accessType === 'premium' && (!price || price <= 0)) {
-                status.className = "text-center text-xs font-medium text-red-400";
+                status.className = "text-center text-xs font-medium text-red-400 break-words px-2";
                 status.textContent = 'Please enter a valid price for a premium file.';
                 return;
             }
 
             submitBtn.disabled = true;
-            status.className = "text-center text-xs font-medium text-amber-300";
+            status.className = "text-center text-xs font-medium text-amber-300 break-words px-2";
             status.textContent = 'Uploading file to Supabase storage...';
 
             try {
@@ -358,25 +355,16 @@
                 const filePath = `${section}/${Date.now()}_${safeFileName}`;
 
                 // 1. Upload to Supabase Storage Bucket ('SITE-UPLOADS')
-                let storageError;
-                try {
-                    const result = await supabaseClient.storage
-                        .from('SITE-UPLOADS')
-                        .upload(filePath, file, {
-                            contentType: file.type || 'application/octet-stream',
-                            upsert: false
-                        });
-                    storageError = result.error;
-                } catch (networkErr) {
-                    status.className = "text-center text-xs font-medium text-red-400";
-                    status.textContent = 'Network error reaching Supabase storage: ' + networkErr.message + '. Check your internet connection, ad blockers/extensions, and that the bucket "SITE-UPLOADS" allows uploads.';
-                    submitBtn.disabled = false;
-                    return;
-                }
+                const { data: storageData, error: storageError } = await supabaseClient.storage
+                    .from('SITE-UPLOADS')
+                    .upload(filePath, file, {
+                        contentType: file.type || 'application/octet-stream',
+                        upsert: false
+                    });
 
                 if (storageError) {
-                    status.className = "text-center text-xs font-medium text-red-400";
-                    status.textContent = 'Storage Upload Failed: ' + storageError.message;
+                    status.className = "text-center text-xs font-medium text-red-400 break-words px-2";
+                    status.textContent = 'Storage Error [' + (storageError.statusCode || 'N/A') + ']: ' + storageError.message;
                     submitBtn.disabled = false;
                     return;
                 }
@@ -402,10 +390,10 @@
                     }]);
 
                 if (dbError) {
-                    status.className = "text-center text-xs font-medium text-red-400";
-                    status.textContent = 'File uploaded, but database entry failed: ' + dbError.message;
+                    status.className = "text-center text-xs font-medium text-red-400 break-words px-2";
+                    status.textContent = 'Database Error: ' + dbError.message;
                 } else {
-                    status.className = "text-center text-xs font-medium text-green-400";
+                    status.className = "text-center text-xs font-medium text-green-400 break-words px-2";
                     status.textContent = 'Successfully uploaded and published!';
                     uploadForm.reset();
                     examCategoryGroup.style.display = 'none';
@@ -414,8 +402,8 @@
                     fileNameDisplay.textContent = '';
                 }
             } catch (err) {
-                status.className = "text-center text-xs font-medium text-red-400";
-                status.textContent = 'Unexpected error: ' + err.message;
+                status.className = "text-center text-xs font-medium text-red-400 break-words px-2";
+                status.textContent = 'Error: ' + err.name + ' - ' + err.message;
             } finally {
                 submitBtn.disabled = false;
             }
