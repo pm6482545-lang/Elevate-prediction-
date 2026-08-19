@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Teaching Materials - Elevate Kenya</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background-color: #0b1329;
+            color: #ffffff;
+        }
+        .glass-card {
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 215, 0, 0.15);
+        }
+        .filter-btn.active {
+            background-color: #f59e0b;
+            color: #000000;
+            border-color: #f59e0b;
+        }
+    </style>
+</head>
+<body class="bg-[#070b19] text-gray-100 antialiased min-h-screen flex flex-col justify-between">
+
+    <!-- Navbar -->
+    <nav class="bg-[#070b19]/90 backdrop-blur-md border-b border-white/10 px-6 py-4 flex justify-between items-center">
+        <div class="flex items-center space-x-3">
+            <a href="index.html" class="flex items-center space-x-3">
+                <img src="logo.png" alt="Logo" class="h-9 w-9 object-contain">
+                <span class="font-extrabold text-sm tracking-wider text-amber-400">ELEVATE KENYA</span>
+            </a>
+        </div>
+        <div>
+            <a href="index.html" class="text-xs font-bold text-gray-300 hover:text-amber-400 transition-all">
+                <i class="fa-solid fa-arrow-left mr-1"></i> Back to Home
+            </a>
+        </div>
+    </nav>
+
+    <!-- Header Banner -->
+    <header class="max-w-5xl mx-auto px-4 pt-12 pb-8 text-center w-full">
+        <div class="inline-block bg-amber-500/10 border border-amber-500/30 text-amber-400 text-xs font-extrabold px-3 py-1.5 rounded-full mb-3 uppercase tracking-wider">
+            Educator Resources
+        </div>
+        <h1 class="text-3xl md:text-4xl font-extrabold text-white mb-3">Teaching Materials & Curriculum Guides</h1>
+        <p class="text-sm text-gray-400 max-w-xl mx-auto">Access professional Schemes of Work, Lesson Plans, and Syllabi tailored for Kenyan CBC & 8-4-4 educators.</p>
+    </header>
+
+    <!-- Main Content Container -->
+    <main class="max-w-5xl mx-auto px-4 pb-16 flex-grow w-full">
+
+        <!-- Controls: Search & Filters -->
+        <div class="glass-card rounded-2xl p-4 md:p-6 mb-8 flex flex-col md:flex-row gap-4 justify-between items-center">
+            <!-- Search Bar -->
+            <div class="relative w-full md:w-80">
+                <span class="absolute inset-y-0 left-0 flex items-center pl-4 text-gray-400">
+                    <i class="fa-solid fa-magnifying-glass text-xs"></i>
+                </span>
+                <input type="text" id="searchInput" placeholder="Search files or subjects..." class="w-full bg-[#070b19] border border-white/10 rounded-xl pl-11 pr-4 py-2.5 text-xs text-white focus:border-amber-500 focus:outline-none" />
+            </div>
+
+            <!-- Category Filter Buttons -->
+            <div class="flex flex-wrap gap-2 w-full md:w-auto justify-start md:justify-end">
+                <button data-filter="all" class="filter-btn active border border-white/10 text-xs font-bold px-4 py-2 rounded-xl transition-all">All</button>
+                <button data-filter="scheme-of-work" class="filter-btn border border-white/10 text-xs font-bold px-4 py-2 rounded-xl text-gray-300 hover:text-white transition-all">Schemes of Work</button>
+                <button data-filter="lesson-plan" class="filter-btn border border-white/10 text-xs font-bold px-4 py-2 rounded-xl text-gray-300 hover:text-white transition-all">Lesson Plans</button>
+                <button data-filter="syllabus" class="filter-btn border border-white/10 text-xs font-bold px-4 py-2 rounded-xl text-gray-300 hover:text-white transition-all">Syllabus / Notes</button>
+            </div>
+        </div>
+
+        <!-- Files Display Grid -->
+        <div id="loadingIndicator" class="text-center py-20 text-amber-400 text-sm font-medium">
+            <i class="fa-solid fa-spinner fa-spin mr-2"></i> Loading teaching materials...
+        </div>
+
+        <div id="filesGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5" style="display: none;">
+            <!-- Dynamic Cards Injected Here -->
+        </div>
+
+        <div id="noResults" class="text-center py-20 text-gray-400 text-sm" style="display: none;">
+            <i class="fa-regular fa-folder-open text-3xl mb-2 text-gray-600 block"></i>
+            No teaching materials found matching your criteria.
+        </div>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-[#050814] border-t border-white/10 py-6 text-center text-xs text-gray-500">
+        <p>&copy; 2026 Elevate Kenya Predictions. All rights reserved.</p>
+    </footer>
+
+    <!-- Supabase Client Script -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script>
+        const SUPABASE_URL = 'https://arymlhhimucgpxdqgovc.supabase.co';
+        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFyeW1saGhpbXVjZ3B4ZHFnb3ZjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODYzNzI4MTQsImV4cCI6MjEwMTk0ODgxNH0.oL0TgtEgPMJXDI2_cb9Ngv84Qh_zHCLzE0q2ohtHAQI';
+
+        const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+        let allMaterials = [];
+        let currentFilter = 'all';
+        let searchQuery = '';
+
+        const filesGrid = document.getElementById('filesGrid');
+        const loadingIndicator = document.getElementById('loadingIndicator');
+        const noResults = document.getElementById('noResults');
+        const searchInput = document.getElementById('searchInput');
+
+        async function fetchTeachingMaterials() {
+            try {
+                const { data, error } = await supabaseClient
+                    .from('files')
+                    .select('*')
+                    .eq('section', 'teaching')
+                    .order('created_at', { ascending: false });
+
+                if (error) throw error;
+
+                allMaterials = data || [];
+                renderMaterials();
+            } catch (err) {
+                console.error("Error loading files:", err);
+                loadingIndicator.innerHTML = `<span class="text-red-400">Failed to load documents. Please check your network.</span>`;
+            }
+        }
+
+        function renderMaterials() {
+            loadingIndicator.style.display = 'none';
+
+            // Filter logic
+            const filtered = allMaterials.filter(item => {
+                const matchesCategory = currentFilter === 'all' || item.exam_category === currentFilter;
+                const matchesSearch = item.file_name.toLowerCase().includes(searchQuery.toLowerCase()) || 
+                                      (item.grade && item.grade.toLowerCase().includes(searchQuery.toLowerCase()));
+                return matchesCategory && matchesSearch;
+            });
+
+            if (filtered.length === 0) {
+                filesGrid.style.display = 'none';
+                noResults.style.display = 'block';
+                return;
+            }
+
+            noResults.style.display = 'none';
+            filesGrid.style.display = 'grid';
+
+            filesGrid.innerHTML = filtered.map(item => {
+                const isPremium = item.access_type === 'premium';
+                const badgeClass = isPremium ? 'bg-amber-500/10 text-amber-400 border-amber-500/30' : 'bg-green-500/10 text-green-400 border-green-500/30';
+                const badgeText = isPremium ? `KES ${item.price}` : 'FREE';
+                const icon = item.exam_category === 'scheme-of-work' ? 'fa-file-lines' : item.exam_category === 'lesson-plan' ? 'fa-chalkboard-user' : 'fa-book-open';
+
+                return `
+                    <div class="glass-card rounded-2xl p-5 flex flex-col justify-between hover:border-amber-500/40 transition-all">
+                        <div>
+                            <div class="flex justify-between items-start mb-3">
+                                <span class="w-10 h-10 rounded-xl bg-amber-500/10 border border-amber-500/20 flex items-center justify-center text-amber-400">
+                                    <i class="fa-solid ${icon}"></i>
+                                </span>
+                                <span class="border text-[10px] font-extrabold px-2.5 py-1 rounded-full uppercase tracking-wider ${badgeClass}">
+                                    ${badgeText}
+                                </span>
+                            </div>
+                            <h3 class="font-bold text-sm text-white mb-2 line-clamp-2">${item.file_name}</h3>
+                            <div class="flex items-center gap-2 text-[11px] text-gray-400 mb-4">
+                                ${item.grade ? `<span class="bg-white/5 px-2 py-0.5 rounded border border-white/5"><i class="fa-solid fa-graduation-cap mr-1 text-amber-400"></i> ${item.grade}</span>` : ''}
+                                <span class="bg-white/5 px-2 py-0.5 rounded border border-white/5 capitalize"><i class="fa-solid fa-tag mr-1 text-amber-400"></i> ${item.exam_category ? item.exam_category.replace(/-/g, ' ') : 'Teaching Material'}</span>
+                            </div>
+                        </div>
+                        <div>
+                            ${isPremium ? 
+                                `<button onclick="handleWhatsAppCheckout('${item.file_name}', ${item.price})" class="w-full bg-amber-500 hover:bg-amber-400 text-black font-extrabold py-2.5 rounded-xl text-xs transition-all flex items-center justify-center gap-1.5 shadow-md">
+                                    <i class="fa-brands fa-whatsapp text-sm"></i> Pay KES ${item.price} via WhatsApp
+                                </button>` :
+                                `<a href="${item.file_url}" target="_blank" download class="w-full bg-green-600 hover:bg-green-500 text-white font-extrabold py-2.5 rounded-xl text-xs transition-all flex items-center justify-center gap-1.5 shadow-md">
+                                    <i class="fa-solid fa-download"></i> Download File
+                                </a>`
+                            }
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        // Filter button listeners
+        document.querySelectorAll('.filter-btn').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+                e.target.classList.add('active');
+                currentFilter = e.target.getAttribute('data-filter');
+                renderMaterials();
+            });
+        });
+
+        // Search input listener
+        searchInput.addEventListener('input', (e) => {
+            searchQuery = e.target.value;
+            renderMaterials();
+        });
+
+        // WhatsApp Checkout Handler
+        function handleWhatsAppCheckout(fileName, price) {
+            const phoneNumber = "254746357349";
+            const message = encodeURIComponent(`Hello, I would like to purchase the premium teaching material: "${fileName}" for KES ${price}. Please guide me on payment.`);
+            const whatsappUrl = `https://wa.me/${phoneNumber}?text=${message}`;
+            window.open(whatsappUrl, '_blank');
+        }
+
+        // Initialize on load
+        fetchTeachingMaterials();
+    </script>
+</body>
+</html>
