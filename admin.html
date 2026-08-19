@@ -79,6 +79,9 @@
                     <select id="sectionSelect" required class="w-full bg-[#070b19] border border-white/10 rounded-xl px-4 py-3 text-sm text-white focus:border-amber-500 focus:outline-none">
                         <option value="">-- Select Section --</option>
                         <option value="prediction">Prediction Exams (KPSEA / KJSEA / KCSE)</option>
+                        <option value="teaching">Teaching Materials (Schemes & Lesson Plans)</option>
+                        <option value="revision-books">Revision Books & Guides</option>
+                        <option value="topical-questions">Topical Questions</option>
                         <option value="lower-primary">Lower Primary Material</option>
                         <option value="upper-primary">Upper Primary Material</option>
                         <option value="junior-school">Junior School Material</option>
@@ -93,6 +96,16 @@
                         <option value="kpsea">KPSEA (Primary Prediction)</option>
                         <option value="kjsea">KJSEA (Junior School Prediction)</option>
                         <option value="kcse">KCSE (Senior School Prediction)</option>
+                    </select>
+                </div>
+
+                <!-- Conditional Sub-Category for Teaching Materials -->
+                <div id="teachingCategoryGroup" style="display: none;">
+                    <label class="block text-xs font-bold text-amber-400 uppercase mb-1">Teaching Document Type</label>
+                    <select id="teachingCategorySelect" class="w-full bg-[#070b19] border border-white/10 rounded-xl px-4 py-3 text-sm text-white focus:border-amber-500 focus:outline-none">
+                        <option value="scheme-of-work">Scheme of Work</option>
+                        <option value="lesson-plan">Lesson Plan</option>
+                        <option value="syllabus">Curriculum Syllabus / Notes</option>
                     </select>
                 </div>
 
@@ -175,6 +188,8 @@
         const sectionSelect = document.getElementById('sectionSelect');
         const examCategoryGroup = document.getElementById('examCategoryGroup');
         const examCategorySelect = document.getElementById('examCategorySelect');
+        const teachingCategoryGroup = document.getElementById('teachingCategoryGroup');
+        const teachingCategorySelect = document.getElementById('teachingCategorySelect');
         const gradeGroup = document.getElementById('gradeGroup');
         const gradeSelect = document.getElementById('gradeSelect');
         const fileInput = document.getElementById('fileInput');
@@ -239,11 +254,30 @@
             const val = e.target.value;
 
             examCategoryGroup.style.display = 'none';
+            teachingCategoryGroup.style.display = 'none';
             gradeGroup.style.display = 'none';
             gradeSelect.innerHTML = '';
 
             if (val === 'prediction') {
                 examCategoryGroup.style.display = 'block';
+            } else if (val === 'teaching') {
+                teachingCategoryGroup.style.display = 'block';
+                gradeGroup.style.display = 'block';
+                gradeSelect.innerHTML = `
+                    <option value="Primary Level">Primary Level</option>
+                    <option value="Junior School">Junior School</option>
+                    <option value="Senior School">Senior School</option>
+                `;
+            } else if (val === 'revision-books' || val === 'topical-questions') {
+                gradeGroup.style.display = 'block';
+                gradeSelect.innerHTML = `
+                    <option value="Primary General">Primary General</option>
+                    <option value="Junior School">Junior School</option>
+                    <option value="Form 1">Form 1</option>
+                    <option value="Form 2">Form 2</option>
+                    <option value="Form 3">Form 3</option>
+                    <option value="Form 4">Form 4</option>
+                `;
             } else if (val === 'lower-primary') {
                 gradeGroup.style.display = 'block';
                 gradeSelect.innerHTML = `
@@ -334,7 +368,12 @@
             const totalFiles = files.length;
             let successCount = 0;
 
-            const examCategory = section === 'prediction' ? examCategorySelect.value : section;
+            let examCategory = section;
+            if (section === 'prediction') {
+                examCategory = examCategorySelect.value;
+            } else if (section === 'teaching') {
+                examCategory = teachingCategorySelect.value;
+            }
             const grade = gradeSelect.value || null;
 
             const { data: { session } } = await supabaseClient.auth.getSession();
@@ -346,7 +385,6 @@
                 status.textContent = `Uploading file ${i + 1} of ${totalFiles}: "${file.name}"...`;
 
                 try {
-                    // Title automatically takes exact original filename
                     const displayName = file.name;
 
                     const extMatch = file.name.match(/\.[^.]+$/);
@@ -406,6 +444,7 @@
                 status.textContent = `Successfully uploaded and published all ${successCount} file(s)!`;
                 uploadForm.reset();
                 examCategoryGroup.style.display = 'none';
+                teachingCategoryGroup.style.display = 'none';
                 gradeGroup.style.display = 'none';
                 priceGroup.style.display = 'none';
                 fileNameDisplay.textContent = '';
