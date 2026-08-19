@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Revision Books & Topical Questions - Elevate Kenya</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background-color: #0b1329;
+            color: #ffffff;
+        }
+        .glass-card {
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 215, 0, 0.15);
+        }
+        .filter-btn.active {
+            background-color: #f59e0b;
+            color: #000000;
+            border-color: #f59e0b;
+        }
+    </style>
+</head>
+<body class="bg-[#070b19] text-gray-100 antialiased min-h-screen flex flex-col justify-between">
+
+    <!-- Navbar -->
+    <nav class="bg-[#070b19]/90 backdrop-blur-md border-b border-white/10 px-6 py-4 flex justify-between items-center">
+        <div class="flex items-center space-x-3">
+            <a href="index.html" class="flex items-center space-x-3">
+                <img src="logo.png" alt="Logo" class="h-9 w-9 object-contain">
+                <span class="font-extrabold text-sm tracking-wider text-amber-400">ELEVATE KENYA</span>
+            </a>
+        </div>
+        <div>
+            <a href="index.html" class="text-xs font-bold text-gray-300 hover:text-amber-400 transition-all">
+                <i class="fa-solid fa-arrow-left mr-1"></i> Back to Home
+            </a>
+        </div>
+    </nav>
+
+    <!-- Header Banner -->
+    <header class="max-w-5xl mx-auto px-4 pt-12 pb-8 text-center w-full">
+        <div class="inline-block bg-amber-500/10 border border-amber-500/30 text-amber-400 text-xs font-extrabold px-3 py-1.5 rounded-full mb-3 uppercase tracking-wider">
+            Academic Vault
+        </div>
+        <h1 class="text-3xl md:text-4xl font-extrabold text-white mb-3">Revision Books & Topical Questions</h1>
+        <p class="text-sm text-gray-400 max-w-xl mx-auto">Comprehensive revision guides and topical questions structured from Grade 1 to Grade 12 (G1–G12).</p>
+    </header>
+
+    <!-- Main Content Container -->
+    <main class="max-w-5xl mx-auto px-4 pb-16 flex-grow w-full">
+
+        <!-- Controls: Search, Section & Grade Filters -->
+        <div class="glass-card rounded-2xl p-4 md:p-6 mb-8 flex flex-col gap-4">
+            <div class="flex flex-col md:flex-row gap-4 justify-between items-center">
+                <!-- Search Bar -->
+                <div class="relative w-full md:w-80">
+                    <span class="absolute inset-y-0 left-0 flex items-center pl-4 text-gray-400">
+                        <i class="fa-solid fa-magnifying-glass text-xs"></i>
+                    </span>
+                    <input type="text" id="searchInput" placeholder="Search title or subject..." class="w-full bg-[#070b19] border border-white/10 rounded-xl pl-11 pr-4 py-2.5 text-xs text-white focus:border-amber-500 focus:outline-none" />
+                </div>
+
+                <!-- Main Section Tab Filters -->
+                <div class="flex gap-2 w-full md:w-auto justify-start md:justify-end">
+                    <button data-section="all" class="filter-btn active border border-white/10 text-xs font-bold px-4 py-2 rounded-xl transition-all">All Materials</button>
+                    <button data-section="revision-books" class="filter-btn border border-white/10 text-xs font-bold px-4 py-2 rounded-xl text-gray-300 hover:text-white transition-all">Revision Books</button>
+                    <button data-section="topical-questions" class="filter-btn border border-white/10 text-xs font-bold px-4 py-2 rounded-xl text-gray-300 hover:text-white transition-all">Topical Questions</button>
+                </div>
+            </div>
+
+            <!-- Grade Level Filter Dropdown -->
+            <div class="flex items-center gap-3 pt-2 border-t border-white/5">
+                <span class="text-xs font-bold text-amber-400 uppercase tracking-wide">Filter Grade:</span>
+                <select id="gradeFilter" class="bg-[#070b19] border border-white/10 rounded-xl px-4 py-2 text-xs text-white focus:border-amber-500 focus:outline-none">
+                    <option value="all">All Grades (G1 - G12)</option>
+                    <option value="Grade 1">Grade 1 (G1)</option>
+                    <option value="Grade 2">Grade 2 (G2)</option>
+                    <option value="Grade 3">Grade 3 (G3)</option>
+                    <option value="Grade 4">Grade 4 (G4)</option>
+                    <option value="Grade 5">Grade 5 (G5)</option>
+                    <option value="Grade 6">Grade 6 (G6)</option>
+                    <option value="Grade 7">Grade 7 (G7)</option>
+                    <option value="Grade 8">Grade 8 (G8)</option>
+                    <option value="Grade 9">Grade 9 (G9)</option>
+                    <option value="Grade 10">Grade 10 (G10)</option>
+                    <option value="Grade 11">Grade 11 (G11)</option>
+                    <option value="Grade 12">Grade 12 (G12)</option>
+                </select>
+            </div>
+        </div>
+
+        <!-- Files Display Grid -->
+        <div id="loadingIndicator" class="text-center py-20 text-amber-400 text-sm font-medium">
+            <i class="fa-solid fa-spinner fa-spin mr-2"></i> Loading materials...
+        </div>
+
+        <div id="filesGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5" style="display: none;">
+            <!-- Dynamic Cards Injected Here -->
+        </div>
+
+        <div id="noResults" class="text-center py-20 text-gray-400 text-sm" style="display: none;">
+            <i class="fa-regular fa-folder-open text-3xl mb-2 text-gray-600 block"></i>
+            No revision documents found matching your filter.
+        </div>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-[#050814] border-t border-white/10 py-6 text-center text-xs text-gray-500">
+        <p>&copy; 2026 Elevate Kenya Predictions. All rights reserved.</p>
+    </footer>
+
+    <!-- Supabase Client Script -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script>
+        const SUPABASE_URL = 'https://arymlhhimucgpxdqgovc.supabase.co';
+        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFyeW1saGhpbXVjZ3B4ZHFnb3ZjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODYzNzI4MTQsImV4cCI6MjEwMTk0ODgxNH0.oL0TgtEgPMJXDI2_cb9Ngv84Qh_zHCLzE0q2ohtHAQI';
+
+        const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+        let allFiles = [];
+        let currentSectionFilter = 'all';
+        let currentGradeFilter = 'all';
+        let searchQuery = '';
+
+        const filesGrid = document.getElementById('filesGrid');
+        const loadingIndicator = document.getElementById('loadingIndicator');
+        const noResults = document.getElementById('noResults');
+        const searchInput = document.getElementById('searchInput');
+        const gradeFilter = document.getElementById('gradeFilter');
+
+        async function fetchRevisionMaterials() {
+            try {
+                // Fetch both revision-books and topical-questions sections
+                const { data, error } = await supabaseClient
+                    .from('files')
+                    .select('*')
+                    .in('section', ['revision-books', 'topical-questions'])
+                    .order('created_at', { ascending: false });
+
+                if (error) throw error;
+
+                allFiles = data || [];
+                renderFiles();
+            } catch (err) {
+                console.error("Error loading files:", err);
+                loadingIndicator.innerHTML = `<span class="text-red-400">Failed to load documents. Please check your network.</span>`;
+            }
+        }
+
+        function renderFiles() {
+            loadingIndicator.style.display = 'none';
+
+            // Filter logic
+            const filtered = allFiles.filter(item => {
+                const matchesSection = currentSectionFilter === 'all' || item.section === currentSectionFilter;
+                const matchesGrade = currentGradeFilter === 'all' || item.grade === currentGradeFilter;
+                const matchesSearch = item.file_name.toLowerCase().includes(searchQuery.toLowerCase()) || 
+                                      (item.grade && item.grade.toLowerCase().includes(searchQuery.toLowerCase())) ||
+                                      (item.section && item.section.toLowerCase().includes(searchQuery.toLowerCase()));
+                return matchesSection && matchesGrade && matchesSearch;
+            });
+
+            if (filtered.length === 0) {
+                filesGrid.style.display = 'none';
+                noResults.style.display = 'block';
+                return;
+            }
+
+            noResults.style.display = 'none';
+            filesGrid.style.display = 'grid';
+
+            filesGrid.innerHTML = filtered.map(item => {
+                const isPremium = item.access_type === 'premium';
+                const badgeClass = isPremium ? 'bg-amber-500/10 text-amber-400 border-amber-500/30' : 'bg-green-500/10 text-green-400 border-green-500/30';
+                const badgeText = isPremium ? `KES ${item.price}` : 'FREE';
+                const sectionName = item.section === 'revision-books' ? 'Revision Book' : 'Topical Questions';
+                const icon = item.section === 'revision-books' ? 'fa-book' : 'fa-clipboard-question';
+
+                return `
+                    <div class="glass-card rounded-2xl p-5 flex flex-col justify-between hover:border-amber-500/40 transition-all">
+                        <div>
+                            <div class="flex justify-between items-start mb-3">
+                                <span class="w-10 h-10 rounded-xl bg-amber-500/10 border border-amber-500/20 flex items-center justify-center text-amber-400">
+                                    <i class="fa-solid ${icon}"></i>
+                                </span>
+                                <span class="border text-[10px] font-extrabold px-2.5 py-1 rounded-full uppercase tracking-wider ${badgeClass}">
+                                    ${badgeText}
+                                </span>
+                            </div>
+                            <h3 class="font-bold text-sm text-white mb-2 line-clamp-2">${item.file_name}</h3>
+                            <div class="flex flex-wrap items-center gap-2 text-[11px] text-gray-400 mb-4">
+                                ${item.grade ? `<span class="bg-white/5 px-2 py-0.5 rounded border border-white/5"><i class="fa-solid fa-graduation-cap mr-1 text-amber-400"></i> ${item.grade}</span>` : ''}
+                                <span class="bg-white/5 px-2 py-0.5 rounded border border-white/5 capitalize"><i class="fa-solid fa-tag mr-1 text-amber-400"></i> ${sectionName}</span>
+                            </div>
+                        </div>
+                        <div>
+                            ${isPremium ? 
+                                `<button onclick="handleWhatsAppCheckout('${item.file_name}', ${item.price})" class="w-full bg-amber-500 hover:bg-amber-400 text-black font-extrabold py-2.5 rounded-xl text-xs transition-all flex items-center justify-center gap-1.5 shadow-md">
+                                    <i class="fa-brands fa-whatsapp text-sm"></i> Pay KES ${item.price} via WhatsApp
+                                </button>` :
+                                `<a href="${item.file_url}" target="_blank" download class="w-full bg-green-600 hover:bg-green-500 text-white font-extrabold py-2.5 rounded-xl text-xs transition-all flex items-center justify-center gap-1.5 shadow-md">
+                                    <i class="fa-solid fa-download"></i> Download File
+                                </a>`
+                            }
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        // Section Filter Button Listeners
+        document.querySelectorAll('.filter-btn').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+                e.target.classList.add('active');
+                currentSectionFilter = e.target.getAttribute('data-section');
+                renderFiles();
+            });
+        });
+
+        // Grade Filter Change Listener
+        gradeFilter.addEventListener('change', (e) => {
+            currentGradeFilter = e.target.value;
+            renderFiles();
+        });
+
+        // Search Input Listener
+        searchInput.addEventListener('input', (e) => {
+            searchQuery = e.target.value;
+            renderFiles();
+        });
+
+        // WhatsApp Checkout Handler
+        function handleWhatsAppCheckout(fileName, price) {
+            const phoneNumber = "254746357349";
+            const message = encodeURIComponent(`Hello, I would like to purchase the premium document: "${fileName}" for KES ${price}. Please guide me on payment.`);
+            const whatsappUrl = `https://wa.me/${phoneNumber}?text=${message}`;
+            window.open(whatsappUrl, '_blank');
+        }
+
+        // Initialize on load
+        fetchRevisionMaterials();
+    </script>
+</body>
+</html>
