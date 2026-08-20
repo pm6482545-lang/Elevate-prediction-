@@ -170,12 +170,11 @@
 
         async function fetchJuniorSchoolFiles() {
             try {
-                // Using .neq('id', '0') and timestamp filter to bypass client/network side response caching
+                // Fixed query: fetches all junior-school items correctly without restrictive ID filters
                 const { data, error } = await supabaseClient
                     .from('files')
                     .select('*')
                     .eq('section', 'junior-school')
-                    .neq('id', '0') 
                     .order('created_at', { ascending: false });
 
                 loadingSpinner.style.display = 'none';
