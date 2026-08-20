@@ -171,7 +171,7 @@
         const filesGrid = document.getElementById('filesGrid');
         const paymentModal = document.getElementById('paymentModal');
 
-        // Fetch files on page load
+        // Fetch files on page load with cache-busting timestamp
         async function fetchJuniorSchoolFiles() {
             try {
                 const { data, error } = await supabaseClient
@@ -213,7 +213,7 @@
             emptyState.style.display = 'none';
 
             filtered.forEach(file => {
-                // Ensure strict checking for paid vs free based on database values ('premium', 'paid', or price > 0)
+                // Strict check for paid vs free
                 const accessType = (file.access_type || '').toLowerCase();
                 const isPaid = accessType === 'premium' || accessType === 'paid' || (Number(file.price) > 0 && accessType !== 'free');
 
