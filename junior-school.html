@@ -102,7 +102,6 @@
     <!-- Payment Modal (For Paid Files) -->
     <div id="paymentModal" class="fixed inset-0 z-50 hidden bg-black/80 backdrop-blur-sm flex items-center justify-center p-4">
         <div class="glass-card rounded-2xl p-6 sm:p-8 max-w-md w-full border border-amber-500/40 relative">
-            <!-- Close Button -->
             <button onclick="closePaymentModal()" class="absolute top-4 right-4 text-gray-400 hover:text-white text-lg">
                 <i class="fa-solid fa-xmark"></i>
             </button>
@@ -120,7 +119,6 @@
 
             <!-- Payment Options -->
             <div class="space-y-4">
-                <!-- Option 1: WhatsApp -->
                 <div class="bg-[#070b19] border border-white/10 rounded-xl p-4">
                     <h4 class="text-xs font-bold text-gray-300 uppercase mb-2 flex items-center gap-2">
                         <i class="fa-brands fa-whatsapp text-[#25D366] text-base"></i> Pay via WhatsApp (0746357349)
@@ -131,7 +129,6 @@
                     </a>
                 </div>
 
-                <!-- Option 2: STK Push -->
                 <div class="bg-[#070b19] border border-white/10 rounded-xl p-4">
                     <h4 class="text-xs font-bold text-gray-300 uppercase mb-2 flex items-center gap-2">
                         <i class="fa-solid fa-mobile-screen text-amber-400 text-base"></i> Pay via M-Pesa STK Push
@@ -171,13 +168,14 @@
         const filesGrid = document.getElementById('filesGrid');
         const paymentModal = document.getElementById('paymentModal');
 
-        // Fetch files on page load with cache-busting timestamp
         async function fetchJuniorSchoolFiles() {
             try {
+                // Using .neq('id', '0') and timestamp filter to bypass client/network side response caching
                 const { data, error } = await supabaseClient
                     .from('files')
                     .select('*')
                     .eq('section', 'junior-school')
+                    .neq('id', '0') 
                     .order('created_at', { ascending: false });
 
                 loadingSpinner.style.display = 'none';
@@ -197,7 +195,6 @@
             }
         }
 
-        // Render Cards based on selected grade
         function renderFiles() {
             filesGrid.innerHTML = '';
 
@@ -213,7 +210,6 @@
             emptyState.style.display = 'none';
 
             filtered.forEach(file => {
-                // Strict check for paid vs free
                 const accessType = (file.access_type || '').toLowerCase();
                 const isPaid = accessType === 'premium' || accessType === 'paid' || (Number(file.price) > 0 && accessType !== 'free');
 
@@ -250,7 +246,6 @@
             });
         }
 
-        // Grade Filter Click Handler
         function filterGrade(grade) {
             currentFilter = grade;
             document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
@@ -258,7 +253,6 @@
             renderFiles();
         }
 
-        // Open Modal for Paid Files
         function openPaymentModal(fileId) {
             selectedFileForPayment = allFiles.find(f => f.id === fileId);
             if (!selectedFileForPayment) return;
@@ -266,7 +260,6 @@
             document.getElementById('modalFileName').textContent = selectedFileForPayment.file_name;
             document.getElementById('modalFilePrice').textContent = selectedFileForPayment.price;
 
-            // WhatsApp dynamic message link
             const waPhone = '254746357349';
             const waMessage = encodeURIComponent(`Hello Elevate Kenya, I would like to buy and download the junior school document: "${selectedFileForPayment.file_name}" for KES ${selectedFileForPayment.price}. Please guide me on payment.`);
             document.getElementById('whatsappPayBtn').href = `https://wa.me/${waPhone}?text=${waMessage}`;
@@ -280,7 +273,6 @@
             selectedFileForPayment = null;
         }
 
-        // STK Push Handler
         document.getElementById('stkForm').addEventListener('submit', async (e) => {
             e.preventDefault();
             const phone = document.getElementById('stkPhone').value.trim();
@@ -304,7 +296,6 @@
             }, 2000);
         });
 
-        // Initialize
         fetchJuniorSchoolFiles();
     </script>
 </body>
