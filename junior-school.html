@@ -99,7 +99,7 @@
         <div id="filesGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"></div>
     </main>
 
-    <!-- Payment Modal (For Premium Files) -->
+    <!-- Payment Modal (For Paid Files) -->
     <div id="paymentModal" class="fixed inset-0 z-50 hidden bg-black/80 backdrop-blur-sm flex items-center justify-center p-4">
         <div class="glass-card rounded-2xl p-6 sm:p-8 max-w-md w-full border border-amber-500/40 relative">
             <!-- Close Button -->
@@ -109,12 +109,12 @@
 
             <div class="text-center mb-6">
                 <div class="w-12 h-12 bg-amber-500/10 border border-amber-500/30 rounded-xl flex items-center justify-center text-amber-400 text-xl mx-auto mb-3">
-                    <i class="fa-solid fa-crown"></i>
+                    <i class="fa-solid fa-lock"></i>
                 </div>
-                <h3 class="text-xl font-extrabold text-white">Unlock Premium Resource</h3>
+                <h3 class="text-xl font-extrabold text-white">Unlock Document</h3>
                 <p id="modalFileName" class="text-xs text-amber-300 font-semibold mt-1 break-words"></p>
                 <div class="mt-3 inline-block bg-amber-500 text-black font-extrabold text-sm px-4 py-1.5 rounded-full">
-                    Price: KES <span id="modalFilePrice">0</span>
+                    Amount: KES <span id="modalFilePrice">0</span>
                 </div>
             </div>
 
@@ -123,7 +123,7 @@
                 <!-- Option 1: WhatsApp -->
                 <div class="bg-[#070b19] border border-white/10 rounded-xl p-4">
                     <h4 class="text-xs font-bold text-gray-300 uppercase mb-2 flex items-center gap-2">
-                        <i class="fa-brands fa-whatsapp text-[#25D366] text-base"></i> Pay via WhatsApp Support (0746357349)
+                        <i class="fa-brands fa-whatsapp text-[#25D366] text-base"></i> Pay via WhatsApp (0746357349)
                     </h4>
                     <p class="text-[11px] text-gray-400 mb-3">Instant manual verification and direct document link delivery on WhatsApp.</p>
                     <a id="whatsappPayBtn" href="#" target="_blank" class="w-full bg-[#25D366] hover:bg-[#20ba5a] text-black font-extrabold py-3 rounded-xl transition-all text-xs flex items-center justify-center gap-2">
@@ -213,15 +213,15 @@
             emptyState.style.display = 'none';
 
             filtered.forEach(file => {
-                const isPremium = file.access_type === 'premium';
+                const isPaid = file.access_type === 'premium'; // DB access_type is 'premium'
                 const card = document.createElement('div');
                 card.className = 'glass-card rounded-2xl p-6 flex flex-col justify-between transition-all duration-300 relative';
 
                 card.innerHTML = `
                     <div>
                         <div class="flex items-center justify-between mb-4">
-                            <span class="text-[11px] font-bold px-3 py-1 rounded-full ${isPremium ? 'bg-amber-500/20 text-amber-400 border border-amber-500/30' : 'bg-green-500/20 text-green-400 border border-green-500/30'}">
-                                ${isPremium ? `<i class="fa-solid fa-crown mr-1"></i> Premium - KES ${file.price}` : '<i class="fa-solid fa-unlock mr-1"></i> Free Download'}
+                            <span class="text-[11px] font-bold px-3 py-1 rounded-full ${isPaid ? 'bg-amber-500/20 text-amber-400 border border-amber-500/30' : 'bg-green-500/20 text-green-400 border border-green-500/30'}">
+                                ${isPaid ? `<i class="fa-solid fa-lock mr-1"></i> Paid Resource - KES ${file.price}` : '<i class="fa-solid fa-unlock mr-1"></i> Free Download'}
                             </span>
                             <span class="text-xs font-bold text-gray-400 bg-white/5 px-2.5 py-1 rounded-lg border border-white/10">
                                 ${file.grade || 'Junior School'}
@@ -232,9 +232,9 @@
                         </h3>
                     </div>
                     <div class="pt-4 border-t border-white/10">
-                        ${isPremium ? `
+                        ${isPaid ? `
                             <button onclick="openPaymentModal('${file.id}')" class="w-full bg-amber-500 hover:bg-amber-400 text-black font-extrabold py-3 rounded-xl transition-all text-xs flex items-center justify-center gap-2 shadow-md">
-                                <i class="fa-brands fa-whatsapp text-sm"></i> PAY KES ${file.price} VIA WHATSAPP
+                                <i class="fa-solid fa-cart-shopping"></i> BUY KES ${file.price} TO DOWNLOAD
                             </button>
                         ` : `
                             <a href="${file.file_url}" download target="_blank" class="w-full bg-green-600 hover:bg-green-500 text-white font-extrabold py-3 rounded-xl transition-all text-xs flex items-center justify-center gap-2 shadow-md">
@@ -255,7 +255,7 @@
             renderFiles();
         }
 
-        // Open Modal for Premium Files
+        // Open Modal for Paid Files
         function openPaymentModal(fileId) {
             selectedFileForPayment = allFiles.find(f => f.id === fileId);
             if (!selectedFileForPayment) return;
@@ -265,7 +265,7 @@
 
             // WhatsApp dynamic message link
             const waPhone = '254746357349';
-            const waMessage = encodeURIComponent(`Hello Elevate Kenya, I would like to buy and access the premium junior school document: "${selectedFileForPayment.file_name}" for KES ${selectedFileForPayment.price}.`);
+            const waMessage = encodeURIComponent(`Hello Elevate Kenya, I would like to buy and download the junior school document: "${selectedFileForPayment.file_name}" for KES ${selectedFileForPayment.price}. Please guide me on payment.`);
             document.getElementById('whatsappPayBtn').href = `https://wa.me/${waPhone}?text=${waMessage}`;
 
             document.getElementById('stkStatus').textContent = '';
