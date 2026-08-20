@@ -123,7 +123,7 @@
                 <!-- Option 1: WhatsApp -->
                 <div class="bg-[#070b19] border border-white/10 rounded-xl p-4">
                     <h4 class="text-xs font-bold text-gray-300 uppercase mb-2 flex items-center gap-2">
-                        <i class="fa-brands fa-whatsapp text-[#25D366] text-base"></i> Pay via WhatsApp Support
+                        <i class="fa-brands fa-whatsapp text-[#25D366] text-base"></i> Pay via WhatsApp Support (0746357349)
                     </h4>
                     <p class="text-[11px] text-gray-400 mb-3">Instant manual verification and direct document link delivery on WhatsApp.</p>
                     <a id="whatsappPayBtn" href="#" target="_blank" class="w-full bg-[#25D366] hover:bg-[#20ba5a] text-black font-extrabold py-3 rounded-xl transition-all text-xs flex items-center justify-center gap-2">
@@ -134,7 +134,7 @@
                 <!-- Option 2: STK Push -->
                 <div class="bg-[#070b19] border border-white/10 rounded-xl p-4">
                     <h4 class="text-xs font-bold text-gray-300 uppercase mb-2 flex items-center gap-2">
-                        <i class="fa-solid fa-[#00a859] fa-mobile-screen text-amber-400 text-base"></i> Pay via M-Pesa STK Push
+                        <i class="fa-solid fa-mobile-screen text-amber-400 text-base"></i> Pay via M-Pesa STK Push
                     </h4>
                     <p class="text-[11px] text-gray-400 mb-3">Enter your Safaricom mobile number to receive an M-Pesa PIN prompt on your phone.</p>
                     <form id="stkForm" class="space-y-3">
@@ -233,11 +233,11 @@
                     </div>
                     <div class="pt-4 border-t border-white/10">
                         ${isPremium ? `
-                            <button onclick="openPaymentModal('${file.id}')" class="w-full bg-amber-500 hover:bg-amber-400 text-black font-extrabold py-3 rounded-xl transition-all text-xs flex items-center justify-center gap-2">
-                                <i class="fa-solid fa-lock"></i> UNLOCK & DOWNLOAD (KES ${file.price})
+                            <button onclick="openPaymentModal('${file.id}')" class="w-full bg-amber-500 hover:bg-amber-400 text-black font-extrabold py-3 rounded-xl transition-all text-xs flex items-center justify-center gap-2 shadow-md">
+                                <i class="fa-brands fa-whatsapp text-sm"></i> PAY KES ${file.price} VIA WHATSAPP
                             </button>
                         ` : `
-                            <a href="${file.file_url}" download target="_blank" class="w-full bg-[#0b1329] hover:bg-amber-500 hover:text-black border border-amber-500/50 text-amber-400 font-extrabold py-3 rounded-xl transition-all text-xs flex items-center justify-center gap-2">
+                            <a href="${file.file_url}" download target="_blank" class="w-full bg-green-600 hover:bg-green-500 text-white font-extrabold py-3 rounded-xl transition-all text-xs flex items-center justify-center gap-2 shadow-md">
                                 <i class="fa-solid fa-download"></i> DOWNLOAD FILE
                             </a>
                         `}
@@ -265,7 +265,7 @@
 
             // WhatsApp dynamic message link
             const waPhone = '254746357349';
-            const waMessage = encodeURIComponent(`Hello Elevate Kenya, I would like to buy and access the premium document: "${selectedFileForPayment.file_name}" for KES ${selectedFileForPayment.price}.`);
+            const waMessage = encodeURIComponent(`Hello Elevate Kenya, I would like to buy and access the premium junior school document: "${selectedFileForPayment.file_name}" for KES ${selectedFileForPayment.price}.`);
             document.getElementById('whatsappPayBtn').href = `https://wa.me/${waPhone}?text=${waMessage}`;
 
             document.getElementById('stkStatus').textContent = '';
@@ -294,7 +294,6 @@
             status.className = "text-center text-[11px] text-amber-300 font-medium";
             status.textContent = "Sending STK Push prompt to your phone...";
 
-            // Connects directly to backend callback API
             setTimeout(() => {
                 status.className = "text-center text-[11px] text-green-400 font-medium";
                 status.textContent = "STK Push sent! Enter your PIN on your phone to complete purchase.";
