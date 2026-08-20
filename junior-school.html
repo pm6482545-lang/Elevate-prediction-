@@ -213,7 +213,10 @@
             emptyState.style.display = 'none';
 
             filtered.forEach(file => {
-                const isPaid = file.access_type === 'premium'; // DB access_type is 'premium'
+                // Ensure strict checking for paid vs free based on database values ('premium', 'paid', or price > 0)
+                const accessType = (file.access_type || '').toLowerCase();
+                const isPaid = accessType === 'premium' || accessType === 'paid' || (Number(file.price) > 0 && accessType !== 'free');
+
                 const card = document.createElement('div');
                 card.className = 'glass-card rounded-2xl p-6 flex flex-col justify-between transition-all duration-300 relative';
 
@@ -237,7 +240,7 @@
                                 <i class="fa-solid fa-cart-shopping"></i> BUY KES ${file.price} TO DOWNLOAD
                             </button>
                         ` : `
-                            <a href="${file.file_url}" download target="_blank" class="w-full bg-green-600 hover:bg-green-500 text-white font-extrabold py-3 rounded-xl transition-all text-xs flex items-center justify-center gap-2 shadow-md">
+                            <a href="${file.file_url}" target="_blank" class="w-full bg-green-600 hover:bg-green-500 text-white font-extrabold py-3 rounded-xl transition-all text-xs flex items-center justify-center gap-2 shadow-md">
                                 <i class="fa-solid fa-download"></i> DOWNLOAD FILE
                             </a>
                         `}
