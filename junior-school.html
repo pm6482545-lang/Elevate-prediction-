@@ -101,7 +101,7 @@
 
     <!-- Payment Modal (For Paid Files) -->
     <div id="paymentModal" class="fixed inset-0 z-50 hidden bg-black/80 backdrop-blur-sm flex items-center justify-center p-4">
-        <div class="glass-card rounded-2xl p-6 sm:p-8 max-w-md w-full border border-amber-500/40 relative">
+        <div class="glass-card rounded-2xl p-6 sm:p-8 max-w-md w-full border border-amber-500/40 relative max-h-[90vh] overflow-y-auto">
             <button onclick="closePaymentModal()" class="absolute top-4 right-4 text-gray-400 hover:text-white text-lg">
                 <i class="fa-solid fa-xmark"></i>
             </button>
@@ -142,6 +142,11 @@
                     </form>
                     <p id="stkStatus" class="text-center text-[11px] mt-2 font-medium"></p>
                 </div>
+
+                <!-- Back to Main Page -->
+                <button onclick="closePaymentModal()" class="w-full bg-transparent border border-white/15 hover:border-white/30 text-gray-300 hover:text-white font-bold py-3 rounded-xl transition-all text-xs flex items-center justify-center gap-2">
+                    <i class="fa-solid fa-arrow-left"></i> BACK TO MAIN PAGE
+                </button>
             </div>
         </div>
     </div>
@@ -162,15 +167,28 @@
         let allFiles = [];
         let currentFilter = 'all';
         let selectedFileForPayment = null;
+        let hasFetched = false; // guards against double-fetch/double-render
 
         const loadingSpinner = document.getElementById('loadingSpinner');
         const emptyState = document.getElementById('emptyState');
         const filesGrid = document.getElementById('filesGrid');
         const paymentModal = document.getElementById('paymentModal');
 
+        // Single, unambiguous rule for deciding paid vs free:
+        // access_type is the source of truth. Only 'premium' or 'paid' (case/whitespace-insensitive)
+        // counts as paid. Everything else (including blank/null) is treated as free.
+        // This removes the old fallback on price, which was the cause of a file
+        // simultaneously qualifying as both "paid" and "free" depending on how price was set.
+        function isFilePaid(file) {
+            const accessType = String(file.access_type || '').trim().toLowerCase();
+            return accessType === 'premium' || accessType === 'paid';
+        }
+
         async function fetchJuniorSchoolFiles() {
+            if (hasFetched) return; // prevent duplicate fetch -> duplicate cards
+            hasFetched = true;
+
             try {
-                // Fixed query: fetches all junior-school items correctly without restrictive ID filters
                 const { data, error } = await supabaseClient
                     .from('files')
                     .select('*')
@@ -197,8 +215,8 @@
         function renderFiles() {
             filesGrid.innerHTML = '';
 
-            const filtered = currentFilter === 'all' 
-                ? allFiles 
+            const filtered = currentFilter === 'all'
+                ? allFiles
                 : allFiles.filter(f => f.grade === currentFilter);
 
             if (filtered.length === 0) {
@@ -209,8 +227,7 @@
             emptyState.style.display = 'none';
 
             filtered.forEach(file => {
-                const accessType = (file.access_type || '').toLowerCase();
-                const isPaid = accessType === 'premium' || accessType === 'paid' || (Number(file.price) > 0 && accessType !== 'free');
+                const isPaid = isFilePaid(file);
 
                 const card = document.createElement('div');
                 card.className = 'glass-card rounded-2xl p-6 flex flex-col justify-between transition-all duration-300 relative';
@@ -232,10 +249,10 @@
                     <div class="pt-4 border-t border-white/10">
                         ${isPaid ? `
                             <button onclick="openPaymentModal('${file.id}')" class="w-full bg-amber-500 hover:bg-amber-400 text-black font-extrabold py-3 rounded-xl transition-all text-xs flex items-center justify-center gap-2 shadow-md">
-                                <i class="fa-solid fa-cart-shopping"></i> BUY KES ${file.price} TO DOWNLOAD
+                                <i class="fa-solid fa-cart-shopping"></i> PAY KES ${file.price} TO DOWNLOAD
                             </button>
                         ` : `
-                            <a href="${file.file_url}" target="_blank" class="w-full bg-green-600 hover:bg-green-500 text-white font-extrabold py-3 rounded-xl transition-all text-xs flex items-center justify-center gap-2 shadow-md">
+                            <a href="${file.file_url}" download target="_blank" rel="noopener" class="w-full bg-green-600 hover:bg-green-500 text-white font-extrabold py-3 rounded-xl transition-all text-xs flex items-center justify-center gap-2 shadow-md">
                                 <i class="fa-solid fa-download"></i> DOWNLOAD FILE
                             </a>
                         `}
@@ -263,6 +280,7 @@
             const waMessage = encodeURIComponent(`Hello Elevate Kenya, I would like to buy and download the junior school document: "${selectedFileForPayment.file_name}" for KES ${selectedFileForPayment.price}. Please guide me on payment.`);
             document.getElementById('whatsappPayBtn').href = `https://wa.me/${waPhone}?text=${waMessage}`;
 
+            document.getElementById('stkPhone').value = '';
             document.getElementById('stkStatus').textContent = '';
             paymentModal.classList.remove('hidden');
         }
