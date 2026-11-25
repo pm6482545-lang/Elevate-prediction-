@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Elevate Kenya Predictions | CBC Schemes, Exams, Lesson Plans &amp; Revision Materials</title>
+<meta name="description" content="Buy CBC schemes of work, lesson plans, curriculum designs, termly exams, KPSEA/KJSEA/KCSE prediction papers, textbooks and revision materials. Pay with M-Pesa, download instantly.">
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+body{font-family:'Plus Jakarta Sans',sans-serif;background:#070b19;color:#f3f4f6}
+.glass{background:rgba(255,255,255,.035);border:1px solid rgba(255,215,0,.13)}
+.pc{transition:.25s}.pc:hover{transform:translateY(-4px);border-color:rgba(245,158,11,.5);box-shadow:0 12px 30px rgba(0,0,0,.45)}
+.btn{background:linear-gradient(90deg,#f59e0b,#d97706);color:#000;font-weight:800}
+.btn:disabled{opacity:.5}
+.inp{width:100%;background:#0b1329;border:1px solid rgba(255,255,255,.14);border-radius:.75rem;padding:.75rem 1rem;color:#fff;outline:none;font-size:.9rem}
+.inp:focus{border-color:#f59e0b}
+.chip{padding:.45rem .9rem;border-radius:999px;font-size:.75rem;font-weight:700;border:1px solid rgba(255,255,255,.15);white-space:nowrap}
+.chip.on{background:#f59e0b;color:#000;border-color:#f59e0b}
+.hero{background:radial-gradient(circle at 20% 10%,rgba(245,158,11,.16),transparent 45%),radial-gradient(circle at 85% 30%,rgba(59,130,246,.14),transparent 45%)}
+.sk{background:linear-gradient(90deg,#0f1830,#17233f,#0f1830);background-size:200% 100%;animation:sk 1.2s infinite}@keyframes sk{to{background-position:-200% 0}}
+select.inp option{background:#0b1329}
+</style>
+</head>
+<body>
+<div id="ann" class="hidden bg-amber-500 text-black text-center text-xs font-bold py-2 px-3"></div>
+
+<nav class="sticky top-0 z-40 bg-[#070b19]/90 backdrop-blur-md border-b border-white/10">
+ <div class="max-w-7xl mx-auto px-4 h-16 flex items-center gap-3">
+  <a href="#" class="flex items-center gap-2 shrink-0"><img src="logo.png" class="h-10 w-10 object-contain" alt="Elevate Kenya"><span class="hidden sm:block font-extrabold tracking-wider text-sm">ELEVATE KENYA <span class="text-amber-400">PREDICTIONS</span></span></a>
+  <div class="flex-1 relative max-w-xl mx-auto"><i class="fa-solid fa-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 text-sm"></i><input id="q" class="inp !pl-9 !py-2.5" placeholder="Search schemes, exams, notes..."></div>
+  <a href="https://wa.me/254746357349" target="_blank" class="hidden md:flex items-center gap-1 text-[#25D366] text-xs font-bold border border-[#25D366]/40 px-3 py-2 rounded-full"><i class="fa-brands fa-whatsapp text-base"></i> Support</a>
+  <button id="cartBtn" class="relative text-xl text-amber-400 px-2"><i class="fa-solid fa-cart-shopping"></i><span id="cartN" class="absolute -top-1 -right-1 bg-red-500 text-white text-[10px] font-extrabold rounded-full h-4 min-w-[1rem] px-1 hidden items-center justify-center"></span></button>
+ </div>
+</nav>
+
+<header class="hero">
+ <div class="max-w-7xl mx-auto px-4 py-12 md:py-20 text-center">
+  <span class="inline-block text-[11px] font-extrabold tracking-widest text-amber-400 border border-amber-500/40 bg-amber-500/10 px-4 py-1.5 rounded-full mb-5">KENYA'S CBC LEARNING RESOURCES STORE</span>
+  <h1 class="text-3xl md:text-6xl font-extrabold leading-tight">Everything you need to <span class="text-transparent bg-clip-text bg-gradient-to-r from-amber-400 to-amber-200">teach, revise &amp; excel</span></h1>
+  <p class="text-gray-300 max-w-2xl mx-auto mt-4 text-sm md:text-base">Schemes of work, lesson plans, curriculum designs, exams, prediction papers, textbooks and revision materials. Pay with M-Pesa and download instantly.</p>
+  <div class="flex flex-wrap justify-center gap-3 mt-7">
+   <a href="#browse" class="btn px-7 py-3.5 rounded-full text-sm">Browse all resources</a>
+   <a href="#free" class="px-7 py-3.5 rounded-full text-sm font-bold border border-emerald-400/50 text-emerald-300 hover:bg-emerald-400/10">Free resources</a>
+  </div>
+  <div class="grid grid-cols-2 md:grid-cols-4 gap-3 mt-10 max-w-4xl mx-auto text-xs font-bold">
+   <div class="glass rounded-xl p-3"><i class="fa-solid fa-bolt text-amber-400 mr-1"></i> Instant download</div>
+   <div class="glass rounded-xl p-3"><i class="fa-solid fa-mobile-screen text-emerald-400 mr-1"></i> Pay via M-Pesa</div>
+   <div class="glass rounded-xl p-3"><i class="fa-solid fa-circle-check text-sky-400 mr-1"></i> CBC aligned</div>
+   <div class="glass rounded-xl p-3"><i class="fa-brands fa-whatsapp text-[#25D366] mr-1"></i> WhatsApp support</div>
+  </div>
+ </div>
+</header>
+
+<main class="max-w-7xl mx-auto px-4 pb-16">
+ <section id="cats" class="py-8"><h2 class="text-xl md:text-2xl font-extrabold mb-4">Shop by category</h2><div id="catGrid" class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3"></div></section>
+ <div id="rows"></div>
+ <section id="browse" class="py-8">
+  <h2 class="text-xl md:text-2xl font-extrabold mb-4">All resources</h2>
+  <div class="flex gap-2 overflow-x-auto pb-3" id="catChips"></div>
+  <div class="grid sm:grid-cols-3 gap-3 my-3">
+   <select id="fLevel" class="inp"><option value="">All levels</option></select>
+   <select id="fGrade" class="inp"><option value="">All grades</option></select>
+   <select id="fSort" class="inp"><option value="new">Newest</option><option value="pl">Price: low to high</option><option value="ph">Price: high to low</option><option value="pop">Most popular</option></select>
+  </div>
+  <p id="count" class="text-xs text-gray-400 mb-3"></p>
+  <div id="grid" class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 md:gap-5"></div>
+ </section>
+ <section class="glass rounded-2xl p-6 md:p-10 grid md:grid-cols-3 gap-6 text-center">
+  <div><i class="fa-solid fa-hand-holding-dollar text-2xl text-amber-400"></i><h3 class="font-extrabold mt-2">1. Choose</h3><p class="text-xs text-gray-400 mt-1">Pick the resources you need.</p></div>
+  <div><i class="fa-solid fa-mobile-screen-button text-2xl text-emerald-400"></i><h3 class="font-extrabold mt-2">2. Pay with M-Pesa</h3><p class="text-xs text-gray-400 mt-1">Enter your number and approve the prompt on your phone.</p></div>
+  <div><i class="fa-solid fa-cloud-arrow-down text-2xl text-sky-400"></i><h3 class="font-extrabold mt-2">3. Download</h3><p class="text-xs text-gray-400 mt-1">Your files are ready instantly. No delivery wait.</p></div>
+ </section>
+</main>
+
+<footer class="bg-[#050814] border-t border-white/10 py-10 text-sm">
+ <div class="max-w-7xl mx-auto px-4 grid md:grid-cols-3 gap-8">
+  <div><div class="flex items-center gap-2 mb-3"><img src="logo.png" class="h-10 w-10 object-contain"><b>ELEVATE KENYA</b></div><p class="text-gray-400 text-xs leading-relaxed">Quality CBC learning resources by Peter Musau Mutua. Built for Kenyan teachers, learners and parents.</p></div>
+  <div class="space-y-2 text-gray-300 text-xs"><p><i class="fa-solid fa-location-dot text-amber-400 w-5"></i> Likoni, Mombasa, Kenya</p><p><i class="fa-solid fa-phone text-amber-400 w-5"></i> <a href="tel:0746357349">0746 357 349</a></p><p><i class="fa-solid fa-envelope text-amber-400 w-5"></i> <a href="mailto:pm6482545@gmail.com">pm6482545@gmail.com</a></p></div>
+  <div class="flex gap-3 items-start"><a href="https://wa.me/254746357349" target="_blank" class="text-[#25D366] border border-[#25D366]/40 px-4 py-2 rounded-xl text-xs font-bold"><i class="fa-brands fa-whatsapp"></i> WhatsApp</a><a href="https://www.facebook.com/profile.php?id=61582117877169" target="_blank" class="text-[#1877F2] border border-[#1877F2]/40 px-4 py-2 rounded-xl text-xs font-bold"><i class="fa-brands fa-facebook"></i> Facebook</a></div>
+ </div>
+ <p class="text-center text-gray-600 text-[11px] mt-8">&copy; 2026 Elevate Kenya Predictions. All rights reserved. Digital products are non-refundable once downloaded. Having trouble? WhatsApp us.</p>
+</footer>
+
+<a href="https://wa.me/254746357349" target="_blank" class="fixed bottom-4 right-4 z-30 bg-[#25D366] text-white w-14 h-14 rounded-full flex items-center justify-center text-3xl shadow-xl"><i class="fa-brands fa-whatsapp"></i></a>
+
+<div id="drawer" class="hidden fixed inset-0 z-50 bg-black/70"><div class="absolute right-0 top-0 h-full w-full max-w-md bg-[#0b1329] p-5 flex flex-col"><div class="flex justify-between items-center mb-4"><h3 class="font-extrabold text-lg">Your cart</h3><button id="drawerX" class="text-2xl text-gray-400">&times;</button></div><div id="cartList" class="flex-1 overflow-y-auto space-y-3"></div><div class="pt-4 border-t border-white/10"><div class="flex justify-between font-extrabold mb-3"><span>Total</span><span id="cartTotal" class="text-amber-400"></span></div><button id="cartPay" class="btn w-full py-3.5 rounded-xl text-sm">CHECKOUT WITH M-PESA</button></div></div></div>
+<div id="modal" class="hidden fixed inset-0 z-50 bg-black/75 overflow-y-auto p-3"><div id="modalBox" class="bg-[#0b1329] border border-white/10 rounded-2xl max-w-3xl mx-auto my-6 relative"></div></div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+const sb=supabase.createClient('https://knjikiqfqwycadkejebx.supabase.co','sb_publishable_tVOXUEsbNXamY0GJLlThtg_Jp8bMafb');
+const $=id=>document.getElementById(id),WA='254746357349';
+const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const kes=n=>'KES '+Number(n).toLocaleString('en-KE');
+let P=[],C=[],cart=[],S={cat:'',q:'',level:'',grade:'',sort:'new'};
+try{cart=JSON.parse(localStorage.getItem('ekp_cart')||'[]')}catch(e){}
+const saveCart=()=>{try{localStorage.setItem('ekp_cart',JSON.stringify(cart))}catch(e){}const n=$('cartN');n.textContent=cart.length;n.style.display=cart.length?'flex':'none'};
+const byId=id=>P.find(p=>p.id===id),catName=id=>C.find(c=>c.id===id)?.name||'';
+const free=p=>Number(p.price)===0,off=p=>p.original_price&&p.original_price>p.price?Math.round(100-p.price/p.original_price*100):0;
+
+function card(p){return `<div class="pc glass rounded-2xl overflow-hidden flex flex-col cursor-pointer" data-open="${p.id}">
+<div class="relative bg-white/5 aspect-[3/4]"><img src="${esc(p.cover_url)}" alt="${esc(p.title)}" loading="lazy" class="w-full h-full object-cover" onerror="this.src='logo.png';this.className='w-full h-full object-contain p-8'">
+<div class="absolute top-2 left-2 flex flex-col gap-1">${free(p)?'<span class="bg-emerald-500 text-black text-[10px] font-extrabold px-2 py-0.5 rounded">FREE</span>':''}${off(p)?`<span class="bg-red-500 text-white text-[10px] font-extrabold px-2 py-0.5 rounded">-${off(p)}%</span>`:''}${p.is_bestseller?'<span class="bg-amber-400 text-black text-[10px] font-extrabold px-2 py-0.5 rounded">BESTSELLER</span>':''}</div></div>
+<div class="p-3 flex-1 flex flex-col"><p class="text-[10px] font-bold text-amber-400 uppercase">${esc(catName(p.category_id))}</p><h3 class="font-bold text-[13px] leading-snug mt-1 line-clamp-2">${esc(p.title)}</h3><p class="text-[11px] text-gray-400 mt-1">${esc([p.grade,p.subject,p.term].filter(Boolean).join(' · '))}</p>
+<div class="mt-auto pt-3 flex items-center justify-between gap-2"><div><b class="${free(p)?'text-emerald-400':'text-white'}">${free(p)?'FREE':kes(p.price)}</b>${off(p)?`<span class="block text-[10px] text-gray-500 line-through">${kes(p.original_price)}</span>`:''}</div>
+${free(p)?`<a href="/api/download?free=${p.id}" data-stop class="btn text-[11px] px-3 py-2 rounded-lg">Get</a>`:`<button data-add="${p.id}" class="btn text-[11px] px-3 py-2 rounded-lg"><i class="fa-solid fa-cart-plus"></i></button>`}</div></div></div>`}
+
+function row(id,title,icon,list){if(!list.length)return'';return `<section id="${id}" class="py-6"><h2 class="text-xl md:text-2xl font-extrabold mb-4"><i class="${icon} text-amber-400 mr-2"></i>${title}</h2><div class="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-5">${list.slice(0,8).map(card).join('')}</div></section>`}
+
+function render(){
+ $('catGrid').innerHTML=C.map(c=>`<button data-cat="${c.id}" class="glass pc rounded-2xl p-4 text-left"><i class="${esc(c.icon||'fa-solid fa-book')} text-2xl text-amber-400"></i><p class="font-extrabold text-sm mt-2">${esc(c.name)}</p><p class="text-[11px] text-gray-400 mt-0.5">${esc(c.tagline||'')}</p><p class="text-[10px] text-amber-300 font-bold mt-1">${P.filter(p=>p.category_id===c.id).length} items</p></button>`).join('');
+ $('rows').innerHTML=row('featured','Featured resources','fa-solid fa-star',P.filter(p=>p.is_featured))+row('best','Best sellers','fa-solid fa-fire',P.filter(p=>p.is_bestseller))+row('free','Free resources','fa-solid fa-gift',P.filter(free))+row('new','New arrivals','fa-solid fa-sparkles',P.slice(0,8));
+ $('catChips').innerHTML=`<button class="chip ${!S.cat?'on':''}" data-cat="">All</button>`+C.map(c=>`<button class="chip ${S.cat===c.id?'on':''}" data-cat="${c.id}">${esc(c.name)}</button>`).join('');
+ const lv=[...new Set(P.map(p=>p.level).filter(Boolean))];$('fLevel').innerHTML='<option value="">All levels</option>'+lv.map(l=>`<option ${S.level===l?'selected':''}>${esc(l)}</option>`).join('');
+ const gr=[...new Set(P.filter(p=>!S.level||p.level===S.level).map(p=>p.grade).filter(Boolean))];$('fGrade').innerHTML='<option value="">All grades</option>'+gr.map(g=>`<option ${S.grade===g?'selected':''}>${esc(g)}</option>`).join('');
+ let l=P.filter(p=>(!S.cat||p.category_id===S.cat)&&(!S.level||p.level===S.level)&&(!S.grade||p.grade===S.grade)&&(!S.q||[p.title,p.subject,p.grade,p.exam_type,p.short_desc,catName(p.category_id)].join(' ').toLowerCase().includes(S.q)));
+ const so={pl:(a,b)=>a.price-b.price,ph:(a,b)=>b.price-a.price,pop:(a,b)=>(b.sales_count+b.download_count)-(a.sales_count+a.download_count)}[S.sort];if(so)l=[...l].sort(so);
+ $('count').textContent=l.length+' resource'+(l.length===1?'':'s');
+ $('grid').innerHTML=l.map(card).join('')||'<p class="col-span-full text-center text-gray-400 py-10">Nothing found. Try another search, or <a class="text-amber-400 underline" href="https://wa.me/'+WA+'?text=Hello, I am looking for ..." target="_blank">ask us on WhatsApp</a>.</p>';
+}
+
+function openProduct(id){const p=byId(id);if(!p)return;$('modalBox').innerHTML=`<button data-close class="absolute top-3 right-4 text-3xl text-gray-400 z-10">&times;</button><div class="grid md:grid-cols-5 gap-5 p-5">
+<div class="md:col-span-2"><img src="${esc(p.cover_url)}" class="w-full rounded-xl bg-white/5" onerror="this.src='logo.png'"></div>
+<div class="md:col-span-3"><p class="text-[11px] font-bold text-amber-400 uppercase">${esc(catName(p.category_id))}</p><h2 class="text-xl font-extrabold mt-1">${esc(p.title)}</h2>
+<div class="flex flex-wrap gap-1.5 mt-3 text-[11px] font-bold">${[p.level,p.grade,p.subject,p.term,p.exam_type,p.year,p.pages&&p.pages+' pages',(p.file_ext||'pdf').toUpperCase()].filter(Boolean).map(x=>`<span class="chip">${esc(x)}</span>`).join('')}</div>
+<div class="mt-4 flex items-end gap-3"><b class="text-3xl ${free(p)?'text-emerald-400':'text-amber-400'}">${free(p)?'FREE':kes(p.price)}</b>${off(p)?`<span class="line-through text-gray-500">${kes(p.original_price)}</span><span class="text-red-400 font-bold text-sm">Save ${off(p)}%</span>`:''}</div>
+<p class="text-sm text-gray-300 mt-4 whitespace-pre-line">${esc(p.description||p.short_desc||'')}</p>
+${p.includes?.length?`<h4 class="font-extrabold text-sm mt-4 mb-2">What's inside</h4><ul class="space-y-1.5 text-sm text-gray-300">${p.includes.map(i=>`<li><i class="fa-solid fa-circle-check text-emerald-400 mr-2"></i>${esc(i)}</li>`).join('')}</ul>`:''}
+<div class="mt-6 flex flex-col sm:flex-row gap-2">${free(p)?`<a href="/api/download?free=${p.id}" class="btn text-center px-6 py-3.5 rounded-xl text-sm flex-1"><i class="fa-solid fa-download mr-1"></i> DOWNLOAD FREE</a>`:`<button data-buy="${p.id}" class="btn px-6 py-3.5 rounded-xl text-sm flex-1"><i class="fa-solid fa-mobile-screen mr-1"></i> BUY NOW WITH M-PESA</button><button data-add="${p.id}" class="px-6 py-3.5 rounded-xl text-sm font-bold border border-amber-500/50 text-amber-400">Add to cart</button>`}</div>
+${free(p)?'':`<a target="_blank" href="https://wa.me/${WA}?text=${encodeURIComponent('Hello, I want to buy: '+p.title+' ('+kes(p.price)+')')}" class="block text-center text-xs text-[#25D366] font-bold mt-3"><i class="fa-brands fa-whatsapp"></i> Prefer to order via WhatsApp?</a>`}
+<p class="text-[11px] text-gray-500 mt-3"><i class="fa-solid fa-bolt text-amber-400"></i> Instant download after payment. No delivery.</p></div></div>`;$('modal').classList.remove('hidden')}
+
+function renderCart(){const l=cart.map(byId).filter(Boolean);$('cartList').innerHTML=l.map(p=>`<div class="flex gap-3 glass rounded-xl p-2"><img src="${esc(p.cover_url)}" class="w-14 h-20 object-cover rounded-lg"><div class="flex-1 min-w-0"><p class="text-sm font-bold leading-tight">${esc(p.title)}</p><b class="text-amber-400 text-sm">${kes(p.price)}</b></div><button data-rm="${p.id}" class="text-red-400 px-2"><i class="fa-solid fa-trash"></i></button></div>`).join('')||'<p class="text-gray-400 text-center py-10">Your cart is empty.</p>';
+ $('cartTotal').textContent=kes(l.reduce((s,p)=>s+Number(p.price),0));$('cartPay').disabled=!l.length}
+
+function checkout(ids){const l=ids.map(byId).filter(Boolean),t=l.reduce((s,p)=>s+Number(p.price),0);$('drawer').classList.add('hidden');
+ $('modalBox').innerHTML=`<button data-close class="absolute top-3 right-4 text-3xl text-gray-400">&times;</button><div class="p-6 max-w-md mx-auto" id="co"><h2 class="text-xl font-extrabold mb-1">Checkout</h2><p class="text-xs text-gray-400 mb-4">Pay securely with M-Pesa and download instantly.</p>
+<div class="glass rounded-xl p-3 text-sm space-y-1 mb-4">${l.map(p=>`<div class="flex justify-between gap-3"><span class="truncate">${esc(p.title)}</span><b class="whitespace-nowrap">${kes(p.price)}</b></div>`).join('')}<div class="flex justify-between border-t border-white/10 pt-2 mt-2 font-extrabold"><span>Total</span><span class="text-amber-400">${kes(t)}</span></div></div>
+<label class="text-[11px] font-bold text-gray-400 uppercase">M-Pesa phone number</label><input id="ph" type="tel" inputmode="numeric" class="inp mt-1 mb-3" placeholder="07XX XXX XXX"><label class="text-[11px] font-bold text-gray-400 uppercase">Email (optional)</label><input id="em" type="email" class="inp mt-1 mb-4" placeholder="you@example.com">
+<button id="payGo" class="btn w-full py-3.5 rounded-xl text-sm"><i class="fa-solid fa-lock mr-1"></i> PAY ${kes(t)}</button><p id="payMsg" class="text-xs text-red-400 text-center mt-2 min-h-[1rem]"></p>
+<a target="_blank" href="https://wa.me/${WA}?text=${encodeURIComponent('Hello, I want to buy: '+l.map(p=>p.title).join(', ')+' (Total '+kes(t)+')')}" class="block text-center text-xs text-[#25D366] font-bold mt-2"><i class="fa-brands fa-whatsapp"></i> Order via WhatsApp instead</a></div>`;
+ $('modal').classList.remove('hidden');
+ $('payGo').onclick=async()=>{const b=$('payGo');b.disabled=true;$('payMsg').textContent='';
+  try{const r=await fetch('/api/stkpush',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({items:ids,phone:$('ph').value,email:$('em').value})});const d=await r.json();if(!r.ok)throw new Error(d.error||'Failed');
+   $('co').innerHTML=`<div class="text-center py-8"><i class="fa-solid fa-mobile-screen-button text-5xl text-amber-400 animate-pulse"></i><h3 class="text-lg font-extrabold mt-4">Check your phone</h3><p class="text-sm text-gray-300 mt-2">Enter your M-Pesa PIN to complete payment of <b>${kes(t)}</b>. This page updates automatically.</p></div>`;poll(d.orderId)}
+  catch(e){$('payMsg').textContent=e.message;b.disabled=false}}}
+
+async function poll(id){for(let i=0;i<40;i++){await new Promise(r=>setTimeout(r,3000));let d;try{d=await(await fetch('/api/order-status?id='+id)).json()}catch(e){continue}
+ if(d.status==='paid')return done(d);if(d.status==='failed'||d.status==='cancelled')return fail(d.status==='cancelled'?'You cancelled the payment.':(d.message||'Payment failed.'))}
+ fail('We did not receive confirmation. If money was deducted, WhatsApp us your M-Pesa message and we will send your files right away.')}
+function done(d){cart=[];saveCart();$('co').innerHTML=`<div class="text-center"><i class="fa-solid fa-circle-check text-5xl text-emerald-400"></i><h3 class="text-xl font-extrabold mt-3">Payment received!</h3><p class="text-xs text-gray-400 mb-4">Download your files below. Links stay active for 7 days on this page.</p></div><div class="space-y-2">${d.items.map(i=>`<a href="/api/download?token=${d.token}&item=${i.id}" class="btn flex items-center justify-between gap-3 px-4 py-3 rounded-xl text-sm"><span class="truncate">${esc(i.title)}</span><i class="fa-solid fa-download"></i></a>`).join('')}</div><p class="text-[11px] text-gray-500 text-center mt-4">Thank you for shopping with Elevate Kenya Predictions.</p>`}
+function fail(m){$('co').innerHTML=`<div class="text-center py-6"><i class="fa-solid fa-circle-xmark text-5xl text-red-400"></i><h3 class="text-lg font-extrabold mt-3">Payment not completed</h3><p class="text-sm text-gray-300 mt-2">${esc(m)}</p><button data-close class="btn px-6 py-3 rounded-xl text-sm mt-5">Close &amp; try again</button><a target="_blank" href="https://wa.me/${WA}" class="block text-xs text-[#25D366] font-bold mt-3">Need help? WhatsApp us</a></div>`}
+
+document.addEventListener('click',e=>{const t=e.target;
+ if(t.closest('[data-stop]'))return e.stopPropagation();
+ let b;
+ if(b=t.closest('[data-add]')){e.stopPropagation();const id=b.dataset.add;if(!cart.includes(id))cart.push(id);saveCart();renderCart();b.innerHTML='<i class="fa-solid fa-check"></i>';return}
+ if(b=t.closest('[data-buy]'))return checkout([b.dataset.buy]);
+ if(b=t.closest('[data-rm]')){cart=cart.filter(x=>x!==b.dataset.rm);saveCart();return renderCart()}
+ if(t.closest('[data-close]')||t.id==='modal')return $('modal').classList.add('hidden');
+ if(b=t.closest('[data-cat]')){S.cat=b.dataset.cat;render();return $('browse').scrollIntoView({behavior:'smooth'})}
+ if(b=t.closest('[data-open]'))return openProduct(b.dataset.open)});
+$('cartBtn').onclick=()=>{renderCart();$('drawer').classList.remove('hidden')};$('drawerX').onclick=()=>$('drawer').classList.add('hidden');$('drawer').onclick=e=>{if(e.target.id==='drawer')$('drawer').classList.add('hidden')};
+$('cartPay').onclick=()=>checkout(cart);
+$('q').oninput=e=>{S.q=e.target.value.trim().toLowerCase();render();if(S.q)$('browse').scrollIntoView({behavior:'smooth'})};
+$('fLevel').onchange=e=>{S.level=e.target.value;S.grade='';render()};$('fGrade').onchange=e=>{S.grade=e.target.value;render()};$('fSort').onchange=e=>{S.sort=e.target.value;render()};
+
+(async()=>{saveCart();$('grid').innerHTML=Array(8).fill('<div class="sk rounded-2xl aspect-[3/4]"></div>').join('');
+ const [c,p,s]=await Promise.all([sb.from('categories').select('*').eq('is_active',true).order('sort_order'),sb.from('products').select('id,slug,title,short_desc,description,includes,category_id,level,grade,subject,term,exam_type,year,price,original_price,pages,cover_url,file_ext,is_featured,is_bestseller,sales_count,download_count,created_at').eq('is_published',true).order('created_at',{ascending:false}),sb.from('settings').select('*')]);
+ C=c.data||[];P=p.data||[];cart=cart.filter(id=>byId(id));saveCart();
+ const a=(s.data||[]).find(x=>x.key==='announcement')?.value;if(a){$('ann').textContent=a;$('ann').classList.remove('hidden')}
+ render()})();
+</script>
+</body>
+</html>

@@ -1,0 +1,559 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Admin | Elevate Kenya Predictions</title>
+<meta name="robots" content="noindex,nofollow">
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  body{font-family:'Plus Jakarta Sans',sans-serif;background:#070b19;color:#f3f4f6}
+  .card{background:rgba(255,255,255,.035);border:1px solid rgba(255,215,0,.14);border-radius:1rem}
+  .inp{width:100%;background:#0b1329;border:1px solid rgba(255,255,255,.12);border-radius:.75rem;padding:.7rem .9rem;font-size:.875rem;color:#fff;outline:none}
+  .inp:focus{border-color:#f59e0b;box-shadow:0 0 0 3px rgba(245,158,11,.15)}
+  .lbl{display:block;font-size:.7rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:#9ca3af;margin-bottom:.35rem}
+  .btn{background:linear-gradient(90deg,#f59e0b,#d97706);color:#000;font-weight:800;border-radius:.75rem;padding:.8rem 1.2rem;font-size:.85rem}
+  .btn:disabled{opacity:.5;cursor:not-allowed}
+  .tab{padding:.6rem 1rem;border-radius:.75rem;font-size:.8rem;font-weight:700;color:#9ca3af;white-space:nowrap}
+  .tab.active{background:rgba(245,158,11,.15);color:#fbbf24;border:1px solid rgba(245,158,11,.4)}
+  .chip{font-size:.65rem;font-weight:800;padding:.15rem .5rem;border-radius:999px}
+  select.inp option{background:#0b1329}
+  .toggle input{accent-color:#f59e0b;width:1.1rem;height:1.1rem}
+</style>
+</head>
+<body class="min-h-screen">
+
+<!-- NAV -->
+<nav class="sticky top-0 z-40 bg-[#070b19]/90 backdrop-blur-md border-b border-white/10 px-4 py-3 flex justify-between items-center">
+  <div class="flex items-center gap-3">
+    <img src="logo.png" alt="Logo" class="h-9 w-9 object-contain" onerror="this.style.display='none'">
+    <span class="font-extrabold text-xs sm:text-sm tracking-wider text-amber-400">ADMIN CONTROL CENTER</span>
+  </div>
+  <div class="flex items-center gap-2">
+    <a href="index.html" target="_blank" class="text-xs font-bold text-gray-300 border border-white/15 px-3 py-2 rounded-xl hover:bg-white/10"><i class="fa-solid fa-store mr-1"></i> Shop</a>
+    <button id="logoutBtn" class="hidden text-xs font-bold text-red-400 border border-red-500/40 bg-red-500/10 px-3 py-2 rounded-xl"><i class="fa-solid fa-power-off mr-1"></i> Logout</button>
+  </div>
+</nav>
+
+<main class="max-w-5xl mx-auto px-4 py-6">
+
+  <!-- LOGIN -->
+  <section id="loginView" class="max-w-md mx-auto mt-10 card p-7">
+    <div class="text-center mb-5">
+      <div class="w-14 h-14 mx-auto rounded-2xl bg-amber-500/15 flex items-center justify-center text-amber-400 text-2xl mb-3"><i class="fa-solid fa-lock"></i></div>
+      <h1 class="text-xl font-extrabold">Admin Login</h1>
+      <p class="text-xs text-gray-400 mt-1">Authorised administrators only</p>
+    </div>
+    <form id="loginForm" class="space-y-4">
+      <div><label class="lbl">Email</label><input id="email" type="email" required class="inp" autocomplete="username"></div>
+      <div><label class="lbl">Password</label><input id="password" type="password" required class="inp" autocomplete="current-password"></div>
+      <button class="btn w-full" type="submit">SIGN IN</button>
+      <p id="loginMsg" class="text-center text-xs min-h-[1rem]"></p>
+    </form>
+  </section>
+
+  <!-- APP -->
+  <section id="appView" class="hidden">
+    <div class="flex gap-2 overflow-x-auto pb-3 mb-4" id="tabs">
+      <button class="tab active" data-tab="dashboard"><i class="fa-solid fa-chart-line mr-1"></i> Dashboard</button>
+      <button class="tab" data-tab="upload"><i class="fa-solid fa-cloud-arrow-up mr-1"></i> Add Product</button>
+      <button class="tab" data-tab="products"><i class="fa-solid fa-boxes-stacked mr-1"></i> Products</button>
+      <button class="tab" data-tab="orders"><i class="fa-solid fa-receipt mr-1"></i> Orders</button>
+    </div>
+
+    <!-- DASHBOARD -->
+    <div id="tab-dashboard">
+      <div class="grid grid-cols-2 lg:grid-cols-4 gap-3" id="statGrid"></div>
+      <div class="card p-5 mt-4">
+        <h3 class="font-extrabold text-sm mb-3 text-amber-400">Recent paid orders</h3>
+        <div id="recentOrders" class="text-sm text-gray-300">Loading...</div>
+      </div>
+    </div>
+
+    <!-- UPLOAD -->
+    <div id="tab-upload" class="hidden">
+      <form id="uploadForm" class="grid lg:grid-cols-3 gap-4">
+        <div class="lg:col-span-2 space-y-4">
+          <div class="card p-5 space-y-4">
+            <h3 class="font-extrabold text-sm text-amber-400">1. Product details</h3>
+            <div class="grid sm:grid-cols-2 gap-4">
+              <div><label class="lbl">Category *</label><select id="fCategory" required class="inp"></select></div>
+              <div id="examTypeWrap" class="hidden"><label class="lbl">Exam type</label><select id="fExamType" class="inp"></select></div>
+            </div>
+            <div><label class="lbl">Title *</label><input id="fTitle" required class="inp" placeholder="e.g. Grade 6 Mathematics KPSEA Prediction Paper 2026"></div>
+            <div><label class="lbl">Short description (shown on card)</label><input id="fShort" maxlength="140" class="inp" placeholder="One line that sells it, max 140 characters"></div>
+            <div><label class="lbl">Full description</label><textarea id="fDesc" rows="4" class="inp" placeholder="Describe the resource, who it is for and how it helps."></textarea></div>
+            <div><label class="lbl">What's inside (one point per line)</label><textarea id="fIncludes" rows="4" class="inp" placeholder="50 exam-style questions&#10;Full marking scheme&#10;Editable Word copy"></textarea></div>
+          </div>
+
+          <div class="card p-5 space-y-4">
+            <h3 class="font-extrabold text-sm text-amber-400">2. Classification</h3>
+            <div class="grid sm:grid-cols-2 gap-4">
+              <div><label class="lbl">Level</label><select id="fLevel" class="inp"></select></div>
+              <div><label class="lbl">Grade / Form</label><select id="fGrade" class="inp"></select></div>
+              <div><label class="lbl">Subject</label><input id="fSubject" list="subjectList" class="inp" placeholder="e.g. Mathematics"></div>
+              <div><label class="lbl">Term</label>
+                <select id="fTerm" class="inp"><option value="">N/A</option><option>Term 1</option><option>Term 2</option><option>Term 3</option><option>Full Year</option></select></div>
+              <div><label class="lbl">Year</label><input id="fYear" type="number" min="2015" max="2100" class="inp" value="2026"></div>
+            </div>
+            <datalist id="subjectList"></datalist>
+          </div>
+
+          <div class="card p-5 space-y-4">
+            <h3 class="font-extrabold text-sm text-amber-400">3. Pricing &amp; visibility</h3>
+            <div class="grid sm:grid-cols-2 gap-4">
+              <div><label class="lbl">Price (KES) *</label><input id="fPrice" type="number" min="0" step="1" required class="inp" value="50"></div>
+              <div><label class="lbl">Old price (strike-through, optional)</label><input id="fOld" type="number" min="0" step="1" class="inp"></div>
+            </div>
+            <label class="toggle flex items-center gap-2 text-sm"><input type="checkbox" id="fFree"> Make this a <b class="text-emerald-400">FREE</b> resource (sets price to 0)</label>
+            <div class="flex flex-wrap gap-5 text-sm">
+              <label class="toggle flex items-center gap-2"><input type="checkbox" id="fFeatured"> Featured</label>
+              <label class="toggle flex items-center gap-2"><input type="checkbox" id="fBest"> Bestseller</label>
+              <label class="toggle flex items-center gap-2"><input type="checkbox" id="fPublish" checked> Publish now</label>
+            </div>
+          </div>
+        </div>
+
+        <div class="space-y-4">
+          <div class="card p-5 space-y-4 lg:sticky lg:top-20">
+            <h3 class="font-extrabold text-sm text-amber-400">4. Upload file</h3>
+            <label class="block border-2 border-dashed border-amber-500/40 rounded-xl p-5 text-center cursor-pointer hover:bg-amber-500/5">
+              <i class="fa-solid fa-file-arrow-up text-2xl text-amber-400"></i>
+              <p class="text-xs font-bold mt-2">Choose PDF / Word / Excel / PowerPoint</p>
+              <p id="fileName" class="text-[11px] text-gray-400 mt-1 break-all">No file selected</p>
+              <input id="fFile" type="file" class="hidden" accept=".pdf,.doc,.docx,.xls,.xlsx,.pptx,.zip">
+            </label>
+
+            <div>
+              <label class="lbl">Cover preview</label>
+              <div class="bg-white/5 rounded-xl p-2 flex items-center justify-center min-h-[200px]">
+                <canvas id="coverCanvas" class="max-w-full rounded-lg hidden"></canvas>
+                <p id="coverHint" class="text-[11px] text-gray-500 text-center px-4">The cover is taken automatically from page 1 of your PDF</p>
+              </div>
+              <p id="pageInfo" class="text-[11px] text-gray-400 mt-1"></p>
+            </div>
+
+            <div>
+              <label class="lbl">Custom cover (optional, or for non-PDF files)</label>
+              <input id="fCover" type="file" accept="image/jpeg,image/png,image/webp" class="inp text-xs">
+            </div>
+
+            <button id="submitBtn" type="submit" class="btn w-full"><i class="fa-solid fa-cloud-arrow-up mr-1"></i> UPLOAD &amp; PUBLISH</button>
+            <p id="uploadMsg" class="text-center text-xs min-h-[1rem] break-words"></p>
+          </div>
+        </div>
+      </form>
+    </div>
+
+    <!-- PRODUCTS -->
+    <div id="tab-products" class="hidden">
+      <div class="flex flex-col sm:flex-row gap-3 mb-4">
+        <input id="prodSearch" class="inp" placeholder="Search products...">
+        <select id="prodCat" class="inp sm:max-w-xs"></select>
+      </div>
+      <div id="prodList" class="space-y-3"></div>
+    </div>
+
+    <!-- ORDERS -->
+    <div id="tab-orders" class="hidden">
+      <div class="flex gap-2 mb-4 overflow-x-auto" id="orderFilters">
+        <button class="tab active" data-f="all">All</button>
+        <button class="tab" data-f="paid">Paid</button>
+        <button class="tab" data-f="pending">Pending</button>
+        <button class="tab" data-f="failed">Failed</button>
+      </div>
+      <div id="orderList" class="space-y-3"></div>
+    </div>
+  </section>
+</main>
+
+<!-- EDIT MODAL -->
+<div id="editModal" class="hidden fixed inset-0 z-50 bg-black/70 backdrop-blur-sm overflow-y-auto p-4">
+  <div class="card bg-[#0b1329] max-w-xl mx-auto p-5 my-6 space-y-3">
+    <div class="flex justify-between items-center">
+      <h3 class="font-extrabold text-amber-400">Edit product</h3>
+      <button id="editClose" class="text-gray-400 text-xl">&times;</button>
+    </div>
+    <input type="hidden" id="eId">
+    <div><label class="lbl">Title</label><input id="eTitle" class="inp"></div>
+    <div><label class="lbl">Short description</label><input id="eShort" maxlength="140" class="inp"></div>
+    <div><label class="lbl">Full description</label><textarea id="eDesc" rows="3" class="inp"></textarea></div>
+    <div><label class="lbl">What's inside (one per line)</label><textarea id="eIncludes" rows="3" class="inp"></textarea></div>
+    <div class="grid grid-cols-2 gap-3">
+      <div><label class="lbl">Price (KES)</label><input id="ePrice" type="number" min="0" class="inp"></div>
+      <div><label class="lbl">Old price</label><input id="eOld" type="number" min="0" class="inp"></div>
+      <div><label class="lbl">Grade</label><input id="eGrade" class="inp"></div>
+      <div><label class="lbl">Subject</label><input id="eSubject" class="inp"></div>
+      <div><label class="lbl">Term</label><input id="eTerm" class="inp"></div>
+      <div><label class="lbl">Year</label><input id="eYear" type="number" class="inp"></div>
+    </div>
+    <div class="flex flex-wrap gap-5 text-sm">
+      <label class="toggle flex items-center gap-2"><input type="checkbox" id="eFeatured"> Featured</label>
+      <label class="toggle flex items-center gap-2"><input type="checkbox" id="eBest"> Bestseller</label>
+      <label class="toggle flex items-center gap-2"><input type="checkbox" id="ePublish"> Published</label>
+    </div>
+    <div><label class="lbl">Replace cover image (optional)</label><input id="eCover" type="file" accept="image/jpeg,image/png,image/webp" class="inp text-xs"></div>
+    <button id="editSave" class="btn w-full">SAVE CHANGES</button>
+    <p id="editMsg" class="text-center text-xs min-h-[1rem]"></p>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+<script>
+/* ============ CONFIG (publishable key is safe in the browser) ============ */
+const SUPABASE_URL = 'https://knjikiqfqwycadkejebx.supabase.co';
+const SUPABASE_KEY = 'sb_publishable_tVOXUEsbNXamY0GJLlThtg_Jp8bMafb';
+/* ========================================================================== */
+
+pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+const $ = id => document.getElementById(id);
+const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const kes = n => 'KES ' + Number(n || 0).toLocaleString('en-KE');
+
+const LEVELS = {
+  'Pre-Primary':   ['PP1','PP2'],
+  'Lower Primary': ['Grade 1','Grade 2','Grade 3'],
+  'Upper Primary': ['Grade 4','Grade 5','Grade 6'],
+  'Junior School': ['Grade 7','Grade 8','Grade 9'],
+  'Senior School': ['Grade 10','Grade 11','Grade 12','Form 1','Form 2','Form 3','Form 4'],
+  'All Levels':    ['All Grades']
+};
+const SUBJECTS = ['Mathematics','English','Kiswahili','Science and Technology','Integrated Science','Social Studies','Agriculture and Nutrition','Creative Arts','Creative Arts and Sports','Pre-Technical Studies','Christian Religious Education','Islamic Religious Education','Hindu Religious Education','Home Science','Biology','Chemistry','Physics','Geography','History','Business Studies','Computer Studies','Literacy','Numeracy','Environmental Activities','Hygiene and Nutrition','Religious Education','Indigenous Language','All Subjects'];
+
+let categories = [], products = [], coverBlob = null, pageCount = null, orderFilter = 'all';
+
+/* ---------- AUTH ---------- */
+async function boot() {
+  const { data: { session } } = await sb.auth.getSession();
+  if (!session) return showLogin();
+  const { data } = await sb.from('admins').select('user_id').maybeSingle();
+  if (!data) {
+    await sb.auth.signOut();
+    showLogin('This account is not an administrator.', true);
+    return;
+  }
+  $('loginView').classList.add('hidden');
+  $('appView').classList.remove('hidden');
+  $('logoutBtn').classList.remove('hidden');
+  await loadCategories();
+  initUploadForm();
+  loadDashboard();
+}
+function showLogin(msg, isErr) {
+  $('appView').classList.add('hidden');
+  $('logoutBtn').classList.add('hidden');
+  $('loginView').classList.remove('hidden');
+  const m = $('loginMsg');
+  m.textContent = msg || '';
+  m.className = 'text-center text-xs min-h-[1rem] ' + (isErr ? 'text-red-400' : 'text-amber-400');
+}
+$('loginForm').addEventListener('submit', async e => {
+  e.preventDefault();
+  showLogin('Signing in...');
+  const { error } = await sb.auth.signInWithPassword({ email: $('email').value.trim(), password: $('password').value });
+  if (error) return showLogin(error.message, true);
+  boot();
+});
+$('logoutBtn').addEventListener('click', async () => { await sb.auth.signOut(); showLogin(); });
+
+/* ---------- TABS ---------- */
+$('tabs').addEventListener('click', e => {
+  const b = e.target.closest('.tab'); if (!b) return;
+  document.querySelectorAll('#tabs .tab').forEach(t => t.classList.toggle('active', t === b));
+  ['dashboard','upload','products','orders'].forEach(n => $('tab-' + n).classList.toggle('hidden', n !== b.dataset.tab));
+  if (b.dataset.tab === 'dashboard') loadDashboard();
+  if (b.dataset.tab === 'products') loadProducts();
+  if (b.dataset.tab === 'orders') loadOrders();
+});
+
+/* ---------- CATEGORIES ---------- */
+async function loadCategories() {
+  const { data, error } = await sb.from('categories').select('*').order('sort_order');
+  if (error) { alert('Could not load categories: ' + error.message); return; }
+  categories = data || [];
+  $('fCategory').innerHTML = '<option value="">-- Select category --</option>' +
+    categories.map(c => `<option value="${c.id}" data-slug="${c.slug}">${esc(c.name)}</option>`).join('');
+  $('prodCat').innerHTML = '<option value="">All categories</option>' +
+    categories.map(c => `<option value="${c.id}">${esc(c.name)}</option>`).join('');
+}
+
+/* ---------- UPLOAD FORM ---------- */
+function initUploadForm() {
+  $('fLevel').innerHTML = '<option value="">-- Select level --</option>' + Object.keys(LEVELS).map(l => `<option>${l}</option>`).join('');
+  $('fGrade').innerHTML = '<option value="">-- Select level first --</option>';
+  $('subjectList').innerHTML = SUBJECTS.map(s => `<option value="${s}">`).join('');
+}
+$('fLevel').addEventListener('change', e => {
+  const g = LEVELS[e.target.value] || [];
+  $('fGrade').innerHTML = g.length ? g.map(x => `<option>${x}</option>`).join('') : '<option value="">-- Select level first --</option>';
+});
+$('fCategory').addEventListener('change', () => {
+  const slug = $('fCategory').selectedOptions[0]?.dataset.slug || '';
+  const wrap = $('examTypeWrap'), sel = $('fExamType');
+  if (slug === 'exams-prediction') {
+    sel.innerHTML = '<option>KPSEA</option><option>KJSEA</option><option>KCSE</option>'; wrap.classList.remove('hidden');
+  } else if (slug === 'exams-termly') {
+    sel.innerHTML = '<option>Opener</option><option>Mid-Term</option><option>End-Term</option>'; wrap.classList.remove('hidden');
+  } else { sel.innerHTML = ''; wrap.classList.add('hidden'); }
+});
+$('fFree').addEventListener('change', e => {
+  $('fPrice').value = e.target.checked ? 0 : 50;
+  $('fPrice').readOnly = e.target.checked;
+});
+
+$('fFile').addEventListener('change', async e => {
+  const f = e.target.files[0];
+  coverBlob = null; pageCount = null;
+  $('coverCanvas').classList.add('hidden'); $('coverHint').classList.remove('hidden'); $('pageInfo').textContent = '';
+  if (!f) { $('fileName').textContent = 'No file selected'; return; }
+  $('fileName').textContent = f.name + ' (' + (f.size / 1048576).toFixed(2) + ' MB)';
+  if (!$('fTitle').value) $('fTitle').value = f.name.replace(/\.[^.]+$/, '').replace(/[_-]+/g, ' ').trim();
+  if (f.name.toLowerCase().endsWith('.pdf')) {
+    $('coverHint').textContent = 'Generating cover from page 1...';
+    try {
+      const pdf = await pdfjsLib.getDocument({ data: await f.arrayBuffer() }).promise;
+      pageCount = pdf.numPages;
+      const page = await pdf.getPage(1);
+      const base = page.getViewport({ scale: 1 });
+      const vp = page.getViewport({ scale: 900 / base.width });
+      const c = $('coverCanvas'); c.width = vp.width; c.height = vp.height;
+      const ctx = c.getContext('2d'); ctx.fillStyle = '#fff'; ctx.fillRect(0, 0, c.width, c.height);
+      await page.render({ canvasContext: ctx, viewport: vp }).promise;
+      coverBlob = await new Promise(r => c.toBlob(r, 'image/jpeg', 0.85));
+      c.classList.remove('hidden'); $('coverHint').classList.add('hidden');
+      $('pageInfo').textContent = pageCount + ' page' + (pageCount > 1 ? 's' : '') + ' detected';
+    } catch (err) {
+      console.error(err);
+      $('coverHint').textContent = 'Could not read the PDF cover. Please choose a custom cover image.';
+    }
+  } else {
+    $('coverHint').textContent = 'Not a PDF: please choose a custom cover image below.';
+  }
+});
+
+const slugify = s => s.toLowerCase().normalize('NFKD').replace(/[^\w\s-]/g, '').trim().replace(/[\s_]+/g, '-').replace(/-+/g, '-').slice(0, 70);
+const setMsg = (el, t, cls) => { el.textContent = t; el.className = 'text-center text-xs min-h-[1rem] break-words ' + (cls || 'text-amber-300'); };
+
+$('uploadForm').addEventListener('submit', async e => {
+  e.preventDefault();
+  const msg = $('uploadMsg'), btn = $('submitBtn');
+  const file = $('fFile').files[0];
+  const custom = $('fCover').files[0];
+  const catOpt = $('fCategory').selectedOptions[0];
+  if (!file) return setMsg(msg, 'Please choose a file to upload.', 'text-red-400');
+  const cover = custom || coverBlob;
+  if (!cover) return setMsg(msg, 'No cover available. Upload a PDF or choose a custom cover.', 'text-red-400');
+
+  btn.disabled = true;
+  const ext = (file.name.split('.').pop() || 'pdf').toLowerCase();
+  const stamp = Date.now();
+  const title = $('fTitle').value.trim();
+  const filePath = `${catOpt.dataset.slug}/${stamp}_${slugify(title) || 'file'}.${ext}`;
+  const coverExt = custom ? (custom.type === 'image/png' ? 'png' : custom.type === 'image/webp' ? 'webp' : 'jpg') : 'jpg';
+  const coverPath = `${stamp}_${slugify(title) || 'cover'}.${coverExt}`;
+  let fileUp = false, coverUp = false;
+
+  try {
+    setMsg(msg, 'Uploading file...');
+    let r = await sb.storage.from('products').upload(filePath, file, { contentType: file.type || 'application/octet-stream', upsert: false });
+    if (r.error) throw r.error; fileUp = true;
+
+    setMsg(msg, 'Uploading cover...');
+    r = await sb.storage.from('covers').upload(coverPath, cover, { contentType: custom ? custom.type : 'image/jpeg', upsert: false });
+    if (r.error) throw r.error; coverUp = true;
+    const coverUrl = sb.storage.from('covers').getPublicUrl(coverPath).data.publicUrl;
+
+    setMsg(msg, 'Saving product...');
+    const price = $('fFree').checked ? 0 : Number($('fPrice').value || 0);
+    const row = {
+      slug: slugify(title) + '-' + Math.random().toString(36).slice(2, 6),
+      title,
+      short_desc: $('fShort').value.trim() || null,
+      description: $('fDesc').value.trim() || null,
+      includes: $('fIncludes').value.split('\n').map(s => s.trim()).filter(Boolean),
+      category_id: $('fCategory').value,
+      level: $('fLevel').value || null,
+      grade: $('fGrade').value || null,
+      subject: $('fSubject').value.trim() || null,
+      term: $('fTerm').value || null,
+      exam_type: $('examTypeWrap').classList.contains('hidden') ? null : ($('fExamType').value || null),
+      year: $('fYear').value ? Number($('fYear').value) : null,
+      price,
+      original_price: $('fOld').value ? Number($('fOld').value) : null,
+      pages: pageCount,
+      file_path: filePath, file_ext: ext, file_size: file.size,
+      cover_url: coverUrl,
+      is_featured: $('fFeatured').checked,
+      is_bestseller: $('fBest').checked,
+      is_published: $('fPublish').checked
+    };
+    const ins = await sb.from('products').insert(row);
+    if (ins.error) throw ins.error;
+
+    setMsg(msg, 'Published successfully!', 'text-emerald-400');
+    $('uploadForm').reset(); initUploadForm();
+    $('fileName').textContent = 'No file selected';
+    $('coverCanvas').classList.add('hidden'); $('coverHint').textContent = 'The cover is taken automatically from page 1 of your PDF'; $('coverHint').classList.remove('hidden');
+    $('pageInfo').textContent = ''; $('examTypeWrap').classList.add('hidden'); $('fPrice').readOnly = false;
+    coverBlob = null; pageCount = null;
+  } catch (err) {
+    console.error(err);
+    if (fileUp) await sb.storage.from('products').remove([filePath]);
+    if (coverUp) await sb.storage.from('covers').remove([coverPath]);
+    setMsg(msg, 'Failed: ' + (err.message || err), 'text-red-400');
+  }
+  btn.disabled = false;
+});
+
+/* ---------- DASHBOARD ---------- */
+async function loadDashboard() {
+  const [p, free, paid, pend] = await Promise.all([
+    sb.from('products').select('*', { count: 'exact', head: true }),
+    sb.from('products').select('*', { count: 'exact', head: true }).eq('price', 0),
+    sb.from('orders').select('total,paid_at,phone,mpesa_receipt,order_no,order_items(title)').eq('status', 'paid').order('paid_at', { ascending: false }),
+    sb.from('orders').select('*', { count: 'exact', head: true }).eq('status', 'pending')
+  ]);
+  const paidRows = paid.data || [];
+  const total = paidRows.reduce((s, o) => s + Number(o.total), 0);
+  const today = new Date().toISOString().slice(0, 10);
+  const todayTotal = paidRows.filter(o => (o.paid_at || '').slice(0, 10) === today).reduce((s, o) => s + Number(o.total), 0);
+  const stat = (icon, label, val, color) => `<div class="card p-4"><i class="${icon} ${color} text-lg"></i><p class="text-xl font-extrabold mt-2">${val}</p><p class="text-[11px] text-gray-400 font-semibold">${label}</p></div>`;
+  $('statGrid').innerHTML =
+    stat('fa-solid fa-sack-dollar', 'Total revenue', kes(total), 'text-emerald-400') +
+    stat('fa-solid fa-calendar-day', 'Revenue today (UTC)', kes(todayTotal), 'text-amber-400') +
+    stat('fa-solid fa-boxes-stacked', `Products (${free.count || 0} free)`, p.count || 0, 'text-sky-400') +
+    stat('fa-solid fa-receipt', `Paid orders (${pend.count || 0} pending)`, paidRows.length, 'text-fuchsia-400');
+  $('recentOrders').innerHTML = paidRows.slice(0, 8).map(o =>
+    `<div class="flex justify-between gap-3 py-2 border-b border-white/5 text-xs"><span class="truncate">${esc((o.order_items || []).map(i => i.title).join(', '))}<br><span class="text-gray-500">${esc(o.phone || '')} &middot; ${esc(o.mpesa_receipt || '')}</span></span><b class="text-emerald-400 whitespace-nowrap">${kes(o.total)}</b></div>`
+  ).join('') || '<p class="text-gray-500 text-xs">No paid orders yet.</p>';
+}
+
+/* ---------- PRODUCTS MANAGER ---------- */
+async function loadProducts() {
+  $('prodList').innerHTML = '<p class="text-gray-400 text-sm">Loading...</p>';
+  const { data, error } = await sb.from('products').select('*, categories(name)').order('created_at', { ascending: false });
+  if (error) { $('prodList').innerHTML = `<p class="text-red-400 text-sm">${esc(error.message)}</p>`; return; }
+  products = data || []; renderProducts();
+}
+function renderProducts() {
+  const q = $('prodSearch').value.trim().toLowerCase(), cat = $('prodCat').value;
+  const list = products.filter(p => (!cat || p.category_id === cat) && (!q || (p.title + ' ' + (p.grade || '') + ' ' + (p.subject || '')).toLowerCase().includes(q)));
+  $('prodList').innerHTML = list.map(p => `
+    <div class="card p-3 flex gap-3 items-center">
+      <img src="${esc(p.cover_url)}" class="w-14 h-20 object-cover rounded-lg bg-white/5 shrink-0" loading="lazy">
+      <div class="min-w-0 flex-1">
+        <p class="font-bold text-sm leading-tight">${esc(p.title)}</p>
+        <p class="text-[11px] text-gray-400 mt-1">${esc(p.categories?.name || '')} &middot; ${esc(p.grade || '')} ${p.subject ? '&middot; ' + esc(p.subject) : ''}</p>
+        <div class="flex flex-wrap gap-1 mt-1.5 items-center">
+          <b class="text-amber-400 text-xs">${Number(p.price) === 0 ? 'FREE' : kes(p.price)}</b>
+          <span class="chip ${p.is_published ? 'bg-emerald-500/20 text-emerald-300' : 'bg-gray-500/30 text-gray-300'}">${p.is_published ? 'LIVE' : 'HIDDEN'}</span>
+          ${p.is_featured ? '<span class="chip bg-amber-500/20 text-amber-300">FEATURED</span>' : ''}
+          ${p.is_bestseller ? '<span class="chip bg-fuchsia-500/20 text-fuchsia-300">BESTSELLER</span>' : ''}
+        </div>
+      </div>
+      <div class="flex flex-col gap-1.5 shrink-0">
+        <button data-a="edit" data-id="${p.id}" class="text-[11px] font-bold px-3 py-1.5 rounded-lg border border-white/15 hover:bg-white/10">Edit</button>
+        <button data-a="toggle" data-id="${p.id}" class="text-[11px] font-bold px-3 py-1.5 rounded-lg border border-white/15 hover:bg-white/10">${p.is_published ? 'Hide' : 'Show'}</button>
+        <button data-a="del" data-id="${p.id}" class="text-[11px] font-bold px-3 py-1.5 rounded-lg border border-red-500/40 text-red-400 hover:bg-red-500/10">Delete</button>
+      </div>
+    </div>`).join('') || '<p class="text-gray-500 text-sm">No products found.</p>';
+}
+$('prodSearch').addEventListener('input', renderProducts);
+$('prodCat').addEventListener('change', renderProducts);
+$('prodList').addEventListener('click', async e => {
+  const b = e.target.closest('button[data-a]'); if (!b) return;
+  const p = products.find(x => x.id === b.dataset.id); if (!p) return;
+  if (b.dataset.a === 'edit') return openEdit(p);
+  if (b.dataset.a === 'toggle') {
+    const { error } = await sb.from('products').update({ is_published: !p.is_published }).eq('id', p.id);
+    if (error) alert(error.message); else loadProducts();
+  }
+  if (b.dataset.a === 'del') {
+    if (!confirm(`Permanently delete "${p.title}"?\n\nIf it has been sold before, use Hide instead.`)) return;
+    const { error } = await sb.from('products').delete().eq('id', p.id);
+    if (error) return alert('Cannot delete (it likely has past orders). Use Hide instead.\n\n' + error.message);
+    await sb.storage.from('products').remove([p.file_path]);
+    const m = (p.cover_url || '').split('/covers/')[1];
+    if (m) await sb.storage.from('covers').remove([decodeURIComponent(m)]);
+    loadProducts();
+  }
+});
+
+/* ---------- EDIT MODAL ---------- */
+function openEdit(p) {
+  $('eId').value = p.id; $('eTitle').value = p.title || ''; $('eShort').value = p.short_desc || '';
+  $('eDesc').value = p.description || ''; $('eIncludes').value = (p.includes || []).join('\n');
+  $('ePrice').value = p.price; $('eOld').value = p.original_price ?? '';
+  $('eGrade').value = p.grade || ''; $('eSubject').value = p.subject || ''; $('eTerm').value = p.term || ''; $('eYear').value = p.year ?? '';
+  $('eFeatured').checked = p.is_featured; $('eBest').checked = p.is_bestseller; $('ePublish').checked = p.is_published;
+  $('eCover').value = ''; setMsg($('editMsg'), '');
+  $('editModal').classList.remove('hidden');
+}
+$('editClose').addEventListener('click', () => $('editModal').classList.add('hidden'));
+$('editSave').addEventListener('click', async () => {
+  const id = $('eId').value, p = products.find(x => x.id === id), btn = $('editSave');
+  btn.disabled = true; setMsg($('editMsg'), 'Saving...');
+  try {
+    const upd = {
+      title: $('eTitle').value.trim(), short_desc: $('eShort').value.trim() || null,
+      description: $('eDesc').value.trim() || null,
+      includes: $('eIncludes').value.split('\n').map(s => s.trim()).filter(Boolean),
+      price: Number($('ePrice').value || 0), original_price: $('eOld').value ? Number($('eOld').value) : null,
+      grade: $('eGrade').value.trim() || null, subject: $('eSubject').value.trim() || null,
+      term: $('eTerm').value.trim() || null, year: $('eYear').value ? Number($('eYear').value) : null,
+      is_featured: $('eFeatured').checked, is_bestseller: $('eBest').checked, is_published: $('ePublish').checked
+    };
+    const nc = $('eCover').files[0];
+    if (nc) {
+      const ext = nc.type === 'image/png' ? 'png' : nc.type === 'image/webp' ? 'webp' : 'jpg';
+      const path = `${Date.now()}_${slugify(upd.title) || 'cover'}.${ext}`;
+      const up = await sb.storage.from('covers').upload(path, nc, { contentType: nc.type });
+      if (up.error) throw up.error;
+      upd.cover_url = sb.storage.from('covers').getPublicUrl(path).data.publicUrl;
+      const old = (p.cover_url || '').split('/covers/')[1];
+      if (old) await sb.storage.from('covers').remove([decodeURIComponent(old)]);
+    }
+    const { error } = await sb.from('products').update(upd).eq('id', id);
+    if (error) throw error;
+    $('editModal').classList.add('hidden'); loadProducts();
+  } catch (err) { setMsg($('editMsg'), 'Failed: ' + (err.message || err), 'text-red-400'); }
+  btn.disabled = false;
+});
+
+/* ---------- ORDERS ---------- */
+$('orderFilters').addEventListener('click', e => {
+  const b = e.target.closest('.tab'); if (!b) return;
+  orderFilter = b.dataset.f;
+  document.querySelectorAll('#orderFilters .tab').forEach(t => t.classList.toggle('active', t === b));
+  loadOrders();
+});
+async function loadOrders() {
+  $('orderList').innerHTML = '<p class="text-gray-400 text-sm">Loading...</p>';
+  let q = sb.from('orders').select('*, order_items(title,price)').order('created_at', { ascending: false }).limit(150);
+  if (orderFilter !== 'all') q = q.eq('status', orderFilter);
+  const { data, error } = await q;
+  if (error) { $('orderList').innerHTML = `<p class="text-red-400 text-sm">${esc(error.message)}</p>`; return; }
+  const col = { paid: 'bg-emerald-500/20 text-emerald-300', pending: 'bg-amber-500/20 text-amber-300', failed: 'bg-red-500/20 text-red-300', cancelled: 'bg-gray-500/30 text-gray-300' };
+  $('orderList').innerHTML = (data || []).map(o => `
+    <div class="card p-4">
+      <div class="flex justify-between items-start gap-3">
+        <div class="min-w-0">
+          <p class="font-extrabold text-sm">${esc(o.order_no)} <span class="chip ${col[o.status] || ''} ml-1">${o.status.toUpperCase()}</span></p>
+          <p class="text-[11px] text-gray-400 mt-1">${esc(o.phone)}${o.email ? ' &middot; ' + esc(o.email) : ''}</p>
+          <p class="text-[11px] text-gray-500">${new Date(o.created_at).toLocaleString('en-KE')}${o.mpesa_receipt ? ' &middot; Receipt ' + esc(o.mpesa_receipt) : ''}</p>
+        </div>
+        <b class="text-amber-400 whitespace-nowrap">${kes(o.total)}</b>
+      </div>
+      <p class="text-xs text-gray-300 mt-2">${esc((o.order_items || []).map(i => i.title).join(' | '))}</p>
+      ${o.status === 'failed' && o.result_desc ? `<p class="text-[11px] text-red-300 mt-1">${esc(o.result_desc)}</p>` : ''}
+    </div>`).join('') || '<p class="text-gray-500 text-sm">No orders yet.</p>';
+}
+
+boot();
+</script>
+</body>
+</html>
