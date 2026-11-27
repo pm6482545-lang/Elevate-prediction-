@@ -1,0 +1,6 @@
+{
+  "rewrites": [
+    { "source": "/resources/:slug", "destination": "/api/product?slug=:slug" },
+    { "source": "/sitemap-products.xml", "destination": "/api/sitemap" }
+  ]
+}
