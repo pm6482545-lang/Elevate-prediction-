@@ -3,7 +3,7 @@ const P=window.PRODUCT,WA='254746357349';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const kes=n=>'KES '+Number(n).toLocaleString('en-KE');
-function checkout(){const t=Number(P.price);
+function checkout(){if(!P.id){window.open('https://wa.me/'+WA+'?text='+encodeURIComponent('Hello, I want to buy: '+P.title),'_blank');return}const t=Number(P.price);
  $('modalBox').innerHTML=`<button data-close class="absolute top-3 right-4 text-3xl text-gray-400">&times;</button><div class="p-6" id="co"><h2 class="text-xl font-extrabold mb-1">Checkout</h2><p class="text-xs text-gray-400 mb-4">Pay securely with M-Pesa and download instantly.</p>
 <div class="glass rounded-xl p-3 text-sm mb-4"><div class="flex justify-between gap-3"><span class="truncate">${esc(P.title)}</span><b class="whitespace-nowrap text-amber-400">${kes(t)}</b></div></div>
 <label class="text-[11px] font-bold text-gray-400 uppercase">M-Pesa phone number</label><input id="ph" type="tel" inputmode="numeric" class="inp mt-1 mb-3" placeholder="07XX XXX XXX"><label class="text-[11px] font-bold text-gray-400 uppercase">Email (optional)</label><input id="em" type="email" class="inp mt-1 mb-4" placeholder="you@example.com">
