@@ -53,6 +53,7 @@ select.inp option{background:#0b1329}
 </header>
 
 <main class="max-w-7xl mx-auto px-4 pb-16">
+ <section class="pt-6"><div class="flex flex-wrap gap-2 items-center"><b class="text-xs text-gray-400 mr-1">BROWSE BY:</b><a href="lower-primary.html" class="chip hover:bg-amber-500 hover:text-black">Lower Primary</a><a href="upper-primary.html" class="chip hover:bg-amber-500 hover:text-black">Upper Primary</a><a href="junior-school.html" class="chip hover:bg-amber-500 hover:text-black">Junior School</a><a href="senior-school.html" class="chip hover:bg-amber-500 hover:text-black">Senior School</a><a href="prediction-papers.html" class="chip hover:bg-amber-500 hover:text-black">Prediction Papers</a><a href="teaching.html" class="chip hover:bg-amber-500 hover:text-black">Teaching Materials</a><a href="revision-topical.html" class="chip hover:bg-amber-500 hover:text-black">Revision & Topical Questions</a></div></section>
  <section id="cats" class="py-8"><h2 class="text-xl md:text-2xl font-extrabold mb-4">Shop by category</h2><div id="catGrid" class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3"></div></section>
  <div id="rows"></div>
  <section id="browse" class="py-8">
@@ -166,11 +167,12 @@ $('cartPay').onclick=()=>checkout(cart);
 $('q').oninput=e=>{S.q=e.target.value.trim().toLowerCase();render();if(S.q)$('browse').scrollIntoView({behavior:'smooth'})};
 $('fLevel').onchange=e=>{S.level=e.target.value;S.grade='';render()};$('fGrade').onchange=e=>{S.grade=e.target.value;render()};$('fSort').onchange=e=>{S.sort=e.target.value;render()};
 
+function hashGo(){const h=location.hash;if(h==='#cart'){renderCart();$('drawer').classList.remove('hidden')}else if(h.startsWith('#cat=')){const c=C.find(x=>x.slug===h.slice(5));if(c){S.cat=c.id;render();$('browse').scrollIntoView()}}}
 (async()=>{saveCart();$('grid').innerHTML=Array(8).fill('<div class="sk rounded-2xl aspect-[3/4]"></div>').join('');
  const [c,p,s]=await Promise.all([sb.from('categories').select('*').eq('is_active',true).order('sort_order'),sb.from('products').select('id,slug,title,short_desc,description,includes,category_id,level,grade,subject,term,exam_type,year,price,original_price,pages,cover_url,file_ext,is_featured,is_bestseller,sales_count,download_count,created_at').eq('is_published',true).order('created_at',{ascending:false}),sb.from('settings').select('*')]);
  C=c.data||[];P=p.data||[];cart=cart.filter(id=>byId(id));saveCart();
  const a=(s.data||[]).find(x=>x.key==='announcement')?.value;if(a){$('ann').textContent=a;$('ann').classList.remove('hidden')}
- render()})();
+ render();hashGo()})();
 </script>
 </body>
 </html>
