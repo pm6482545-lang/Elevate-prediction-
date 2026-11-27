@@ -178,6 +178,7 @@
     </div>
     <input type="hidden" id="eId">
     <div><label class="lbl">Title</label><input id="eTitle" class="inp"></div>
+    <div><label class="lbl">Page URL name (slug)</label><input id="eSlug" class="inp" placeholder="grade-10-biology-textbook"><p class="text-[10px] text-gray-500 mt-1">Link: yourdomain/resources/<b>this-name</b></p></div>
     <div><label class="lbl">Short description</label><input id="eShort" maxlength="140" class="inp"></div>
     <div><label class="lbl">Full description</label><textarea id="eDesc" rows="3" class="inp"></textarea></div>
     <div><label class="lbl">What's inside (one per line)</label><textarea id="eIncludes" rows="3" class="inp"></textarea></div>
@@ -199,6 +200,13 @@
     <p id="editMsg" class="text-center text-xs min-h-[1rem]"></p>
   </div>
 </div>
+
+<div id="prevModal" class="hidden fixed inset-0 z-50 bg-black/70 backdrop-blur-sm overflow-y-auto p-4"><div class="card bg-[#0b1329] max-w-md mx-auto p-5 my-10 space-y-3">
+  <div class="flex justify-between items-center"><h3 class="font-extrabold text-amber-400">Free preview pages</h3><button id="pvClose" class="text-gray-400 text-xl">&times;</button></div>
+  <p id="pvTitle" class="text-sm font-bold"></p>
+  <p class="text-xs text-gray-400">Pages 1 to N are shown free on the product page. The rest stay locked until payment. Run again any time to change N.</p>
+  <div><label class="lbl">Free pages (from page 1 to ...)</label><input id="pvN" type="number" min="1" max="60" value="17" class="inp"></div>
+  <button id="pvGo" class="btn w-full">GENERATE &amp; PUBLISH PREVIEWS</button><p id="pvMsg" class="text-center text-xs min-h-[1rem] break-words"></p></div></div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
@@ -230,10 +238,11 @@ let categories = [], products = [], coverBlob = null, pageCount = null, orderFil
 async function boot() {
   const { data: { session } } = await sb.auth.getSession();
   if (!session) return showLogin();
-  const { data } = await sb.from('admins').select('user_id').maybeSingle();
-  if (!data) {
+  const { data, error } = await sb.rpc('is_admin');
+  if (error || data !== true) {
+    const why = error ? ('Admin check failed: ' + error.message) : 'This account is not an administrator.';
     await sb.auth.signOut();
-    showLogin('This account is not an administrator.', true);
+    showLogin(why, true);
     return;
   }
   $('loginView').classList.add('hidden');
@@ -456,6 +465,8 @@ function renderProducts() {
         </div>
       </div>
       <div class="flex flex-col gap-1.5 shrink-0">
+        <button data-a="prev" data-id="${p.id}" class="text-[11px] font-bold px-3 py-1.5 rounded-lg border border-amber-500/40 text-amber-400 hover:bg-amber-500/10">Previews${p.preview_pages ? ' (' + p.preview_pages + ')' : ''}</button>
+        <a target="_blank" href="/resources/${esc(p.slug)}" class="text-[11px] font-bold px-3 py-1.5 rounded-lg border border-white/15 hover:bg-white/10 text-center">Page</a>
         <button data-a="edit" data-id="${p.id}" class="text-[11px] font-bold px-3 py-1.5 rounded-lg border border-white/15 hover:bg-white/10">Edit</button>
         <button data-a="toggle" data-id="${p.id}" class="text-[11px] font-bold px-3 py-1.5 rounded-lg border border-white/15 hover:bg-white/10">${p.is_published ? 'Hide' : 'Show'}</button>
         <button data-a="del" data-id="${p.id}" class="text-[11px] font-bold px-3 py-1.5 rounded-lg border border-red-500/40 text-red-400 hover:bg-red-500/10">Delete</button>
@@ -468,6 +479,7 @@ $('prodList').addEventListener('click', async e => {
   const b = e.target.closest('button[data-a]'); if (!b) return;
   const p = products.find(x => x.id === b.dataset.id); if (!p) return;
   if (b.dataset.a === 'edit') return openEdit(p);
+  if (b.dataset.a === 'prev') return openPrev(p);
   if (b.dataset.a === 'toggle') {
     const { error } = await sb.from('products').update({ is_published: !p.is_published }).eq('id', p.id);
     if (error) alert(error.message); else loadProducts();
@@ -485,7 +497,7 @@ $('prodList').addEventListener('click', async e => {
 
 /* ---------- EDIT MODAL ---------- */
 function openEdit(p) {
-  $('eId').value = p.id; $('eTitle').value = p.title || ''; $('eShort').value = p.short_desc || '';
+  $('eId').value = p.id; $('eSlug').value = p.slug || ''; $('eTitle').value = p.title || ''; $('eShort').value = p.short_desc || '';
   $('eDesc').value = p.description || ''; $('eIncludes').value = (p.includes || []).join('\n');
   $('ePrice').value = p.price; $('eOld').value = p.original_price ?? '';
   $('eGrade').value = p.grade || ''; $('eSubject').value = p.subject || ''; $('eTerm').value = p.term || ''; $('eYear').value = p.year ?? '';
@@ -499,7 +511,7 @@ $('editSave').addEventListener('click', async () => {
   btn.disabled = true; setMsg($('editMsg'), 'Saving...');
   try {
     const upd = {
-      title: $('eTitle').value.trim(), short_desc: $('eShort').value.trim() || null,
+      title: $('eTitle').value.trim(), slug: slugify($('eSlug').value) || p.slug, short_desc: $('eShort').value.trim() || null,
       description: $('eDesc').value.trim() || null,
       includes: $('eIncludes').value.split('\n').map(s => s.trim()).filter(Boolean),
       price: Number($('ePrice').value || 0), original_price: $('eOld').value ? Number($('eOld').value) : null,
@@ -552,6 +564,39 @@ async function loadOrders() {
       ${o.status === 'failed' && o.result_desc ? `<p class="text-[11px] text-red-300 mt-1">${esc(o.result_desc)}</p>` : ''}
     </div>`).join('') || '<p class="text-gray-500 text-sm">No orders yet.</p>';
 }
+
+/* ---------- PREVIEW PAGES ---------- */
+let prevP = null;
+function openPrev(p) { prevP = p; $('pvTitle').textContent = p.title; $('pvN').value = p.preview_pages || 17; setMsg($('pvMsg'), ''); $('prevModal').classList.remove('hidden'); }
+$('pvClose').addEventListener('click', () => $('prevModal').classList.add('hidden'));
+$('pvGo').addEventListener('click', async () => {
+  const p = prevP, btn = $('pvGo'), msg = $('pvMsg'); btn.disabled = true;
+  try {
+    setMsg(msg, 'Downloading the book (may take a moment)...');
+    const dl = await sb.storage.from('products').download(p.file_path); if (dl.error) throw dl.error;
+    const pdf = await pdfjsLib.getDocument({ data: await dl.data.arrayBuffer() }).promise;
+    const total = pdf.numPages, last = Math.min(Math.max(1, Number($('pvN').value) || 17), total, 60), urls = [], v = Date.now();
+    const old = await sb.storage.from('previews').list(p.id, { limit: 200 });
+    if (old.data && old.data.length) await sb.storage.from('previews').remove(old.data.map(f => p.id + '/' + f.name));
+    for (let i = 1; i <= last; i++) {
+      setMsg(msg, `Rendering page ${i} of ${last}...`);
+      const page = await pdf.getPage(i), b0 = page.getViewport({ scale: 1 }), vp = page.getViewport({ scale: 900 / b0.width });
+      const c = document.createElement('canvas'); c.width = vp.width; c.height = vp.height;
+      const ctx = c.getContext('2d'); ctx.fillStyle = '#fff'; ctx.fillRect(0, 0, c.width, c.height);
+      await page.render({ canvasContext: ctx, viewport: vp }).promise;
+      ctx.save(); ctx.globalAlpha = .07; ctx.fillStyle = '#000'; ctx.font = 'bold 46px sans-serif'; ctx.textAlign = 'center';
+      ctx.translate(c.width / 2, c.height / 2); ctx.rotate(-Math.PI / 5); ctx.fillText('ELEVATE KENYA PREDICTIONS', 0, 0); ctx.restore();
+      const blob = await new Promise(r => c.toBlob(r, 'image/jpeg', 0.72));
+      const path = `${p.id}/p${String(i).padStart(3, '0')}.jpg`;
+      const up = await sb.storage.from('previews').upload(path, blob, { contentType: 'image/jpeg', upsert: true }); if (up.error) throw up.error;
+      urls.push(sb.storage.from('previews').getPublicUrl(path).data.publicUrl + '?v=' + v);
+    }
+    setMsg(msg, 'Saving...');
+    const { error } = await sb.from('products').update({ preview_urls: urls, preview_pages: last, pages: total }).eq('id', p.id); if (error) throw error;
+    setMsg(msg, `Done! Pages 1-${last} are free; pages ${last + 1}-${total} are locked.`, 'text-emerald-400'); loadProducts();
+  } catch (err) { console.error(err); setMsg(msg, 'Failed: ' + (err.message || err), 'text-red-400'); }
+  btn.disabled = false;
+});
 
 boot();
 </script>
