@@ -2,4 +2,6 @@ User-agent: *
 Allow: /
 Disallow: /admin.html
 Disallow: /api/
+
 Sitemap: https://www.elevatepredictions.co.ke/sitemap.xml
+Sitemap: https://www.elevatepredictions.co.ke/sitemap-products.xml
