@@ -4,7 +4,7 @@ const sb=supabase.createClient('https://knjikiqfqwycadkejebx.supabase.co','sb_pu
 const $=id=>document.getElementById(id);
 const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const kes=n=>'KES '+Number(n).toLocaleString('en-KE'),nat=(a,b)=>a.localeCompare(b,undefined,{numeric:true});
-let P=[],C=[],cart=[],tab='';
+let P=[],C=[],cart=[],tab='',sub='',qq='',shownN=CFG.perPage||0;
 try{cart=JSON.parse(localStorage.getItem('ekp_cart')||'[]')}catch(e){}
 const saveCart=()=>{try{localStorage.setItem('ekp_cart',JSON.stringify(cart))}catch(e){}const n=$('cartN');n.textContent=cart.length;n.style.display=cart.length?'flex':'none'};
 const cat=id=>C.find(c=>c.id===id)||{},byId=id=>P.find(p=>p.id===id),free=p=>Number(p.price)===0,off=p=>p.original_price&&p.original_price>p.price?Math.round(100-p.price/p.original_price*100):0;
@@ -23,8 +23,10 @@ function ld(L){const s=document.createElement('script');s.type='application/ld+j
 function render(){
  const L=P.filter(inPage),tabs=[...new Set(L.map(tabVal).filter(Boolean))].sort(nat);
  $('tabs').innerHTML=tabs.length>1?`<button class="chip ${!tab?'on':''}" data-tab="">All</button>`+tabs.map(t=>`<button class="chip ${tab===t?'on':''}" data-tab="${esc(t)}">${esc(t)}</button>`).join(''):'';
- const F=L.filter(p=>!tab||tabVal(p)===tab);
- $('count').textContent=F.length+' resource'+(F.length===1?'':'s');
+ if(CFG.subtabs&&$('subtabs')){const base=L.filter(p=>!tab||tabVal(p)===tab),subs=[...new Set(base.map(p=>p[CFG.subtabs]).filter(Boolean))].sort(nat);$('subtabs').innerHTML=subs.length>1?`<button class="chip ${!sub?'on':''}" data-sub="">All subjects</button>`+subs.map(x=>`<button class="chip ${sub===x?'on':''}" data-sub="${esc(x)}">${esc(x)}</button>`).join(''):''}
+ const F0=L.filter(p=>(!tab||tabVal(p)===tab)&&(!sub||p[CFG.subtabs]===sub)&&(!qq||[p.title,p.subject,p.grade,p.term].join(' ').toLowerCase().includes(qq))),F=shownN?F0.slice(0,shownN):F0;
+ if($('moreBtn')){const left=F0.length-F.length;$('moreBtn').classList.toggle('hidden',left<=0);$('moreBtn').textContent='Load more ('+left+' left)'}
+ $('count').textContent=F0.length+' resource'+(F0.length===1?'':'s');
  $('grid').innerHTML=F.map(card).join('')||`<div class="col-span-full glass rounded-2xl p-10 text-center"><i class="fa-solid fa-folder-open text-4xl text-amber-400/50"></i><h3 class="font-bold mt-3">No files available yet</h3><p class="text-xs text-gray-400 mt-1">New materials are uploaded regularly. Meanwhile, browse the <a class="text-amber-400 underline" href="index.html">full shop</a> or <a class="text-amber-400 underline" target="_blank" href="https://wa.me/${WA}?text=${encodeURIComponent('Hello, I am looking for '+CFG.name+' materials')}">ask us on WhatsApp</a>.</p></div>`;
  const ids=new Set(L.map(p=>p.id)),lv=new Set(L.map(p=>p.level));
  const R=P.filter(p=>!ids.has(p.id)).sort((a,b)=>lv.has(b.level)-lv.has(a.level)).slice(0,8);
@@ -69,10 +71,12 @@ document.addEventListener('click',e=>{const t=e.target;if(t.closest('[data-stop]
  if(b=t.closest('[data-add]')){e.stopPropagation();const id=b.dataset.add;if(!cart.includes(id))cart.push(id);saveCart();b.innerHTML='<i class="fa-solid fa-check"></i>';return}
  if(b=t.closest('[data-buy]'))return checkout([b.dataset.buy]);
  if(t.closest('[data-close]')||t.id==='modal')return $('modal').classList.add('hidden');
- if(b=t.closest('[data-tab]')){tab=b.dataset.tab;return render()}
+ if(b=t.closest('[data-tab]')){tab=b.dataset.tab;sub='';shownN=CFG.perPage||0;return render()}
+ if(b=t.closest('[data-sub]')){sub=b.dataset.sub;shownN=CFG.perPage||0;return render()}
+ if(t.closest('#moreBtn')){shownN+=CFG.perPage||24;return render()}
  if(b=t.closest('[data-open]'))return openProduct(b.dataset.open)});
 
 (async()=>{saveCart();$('grid').innerHTML=Array(6).fill('<div class="sk rounded-2xl aspect-[3/4]"></div>').join('');
  const [c,p]=await Promise.all([sb.from('categories').select('*').eq('is_active',true).order('sort_order'),sb.from('products').select('id,slug,title,short_desc,description,includes,category_id,level,grade,subject,term,exam_type,year,price,original_price,pages,cover_url,file_ext,is_featured,is_bestseller,sales_count,download_count,created_at').eq('is_published',true).order('created_at',{ascending:false})]);
- C=c.data||[];P=p.data||[];render();ld(P.filter(inPage))})();
+ if($('q2'))$('q2').oninput=e=>{qq=e.target.value.trim().toLowerCase();shownN=CFG.perPage||0;render()};C=c.data||[];P=p.data||[];render();ld(P.filter(inPage))})();
 })();
