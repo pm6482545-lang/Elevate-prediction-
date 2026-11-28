@@ -59,6 +59,7 @@
     <div class="flex gap-2 overflow-x-auto pb-3 mb-4" id="tabs">
       <button class="tab active" data-tab="dashboard"><i class="fa-solid fa-chart-line mr-1"></i> Dashboard</button>
       <button class="tab" data-tab="upload"><i class="fa-solid fa-cloud-arrow-up mr-1"></i> Add Product</button>
+      <button class="tab" data-tab="bulk"><i class="fa-solid fa-layer-group mr-1"></i> Bulk Upload</button>
       <button class="tab" data-tab="products"><i class="fa-solid fa-boxes-stacked mr-1"></i> Products</button>
       <button class="tab" data-tab="orders"><i class="fa-solid fa-receipt mr-1"></i> Orders</button>
     </div>
@@ -145,6 +146,47 @@
           </div>
         </div>
       </form>
+    </div>
+
+    <!-- BULK -->
+    <div id="tab-bulk" class="hidden space-y-4">
+      <div class="card p-5">
+        <h3 class="font-extrabold text-sm text-amber-400 mb-2">Naming rule (rename files before uploading)</h3>
+        <p class="text-xs text-gray-300">Use this pattern with underscores: <b>Subject_Grade_Term Stage_Item</b></p>
+        <ul class="text-[11px] text-gray-400 mt-2 space-y-1 font-mono break-all">
+          <li>Mathematics_Grade 6_Term 1 Opener_Exam.pdf</li>
+          <li>English_Grade 8_Term 2 Mid_Exam.pdf</li>
+          <li>Science and Technology_Grade 5_Term 3 End_Exam.pdf</li>
+          <li>Kiswahili_Grade 7_Term 1_Scheme of Work.pdf</li>
+          <li>Mathematics_Grade 9_Lesson Plan.pdf</li>
+          <li>Mathematics_Grade 6_Term 1 Opener_Marking Scheme.pdf</li>
+        </ul>
+        <p class="text-[11px] text-gray-500 mt-2">Stage is Opener, Mid or End. Term and stage are optional (leave them out for notes, lesson plans, etc.). The file name becomes the product name on the website, so spell it the way you want customers to see it. No descriptions needed.</p>
+      </div>
+      <div class="card p-5 space-y-4">
+        <h3 class="font-extrabold text-sm text-amber-400">Batch settings</h3>
+        <div class="grid sm:grid-cols-2 gap-4">
+          <div><label class="lbl">Category</label><select id="bCat" class="inp"></select></div>
+          <div><label class="lbl">Level</label><select id="bLevel" class="inp"></select></div>
+          <div><label class="lbl">Price per file (KES)</label><input id="bPrice" type="number" min="0" value="50" class="inp"></div>
+          <div><label class="lbl">Year</label><input id="bYear" type="number" value="2026" class="inp"></div>
+        </div>
+        <div class="flex flex-wrap gap-5 text-sm">
+          <label class="toggle flex items-center gap-2"><input type="checkbox" id="bFree"> All <b class="text-emerald-400">FREE</b></label>
+          <label class="toggle flex items-center gap-2"><input type="checkbox" id="bPub" checked> Publish now</label>
+          <label class="toggle flex items-center gap-2"><input type="checkbox" id="bSkip" checked> Skip files already uploaded</label>
+        </div>
+        <label class="block border-2 border-dashed border-amber-500/40 rounded-xl p-6 text-center cursor-pointer hover:bg-amber-500/5">
+          <i class="fa-solid fa-files text-2xl text-amber-400"></i>
+          <p class="text-xs font-bold mt-2">Choose many files at once (PDF, Word, Excel, PowerPoint)</p>
+          <input id="bFiles" type="file" multiple class="hidden" accept=".pdf,.doc,.docx,.xls,.xlsx,.pptx,.zip">
+        </label>
+        <p class="text-[11px] text-gray-500">Covers are made automatically from page 1 of each PDF. Word or Excel files get a branded cover with the file name.</p>
+      </div>
+      <div id="bList" class="space-y-3"></div>
+      <div id="bBar" class="hidden"><div class="h-2 bg-white/10 rounded-full overflow-hidden"><div id="bFill" class="h-2 bg-amber-500" style="width:0"></div></div></div>
+      <button id="bGo" class="btn w-full hidden"><i class="fa-solid fa-cloud-arrow-up mr-1"></i> UPLOAD ALL</button>
+      <p id="bMsg" class="text-center text-xs min-h-[1rem] break-words"></p>
     </div>
 
     <!-- PRODUCTS -->
@@ -273,8 +315,9 @@ $('logoutBtn').addEventListener('click', async () => { await sb.auth.signOut(); 
 $('tabs').addEventListener('click', e => {
   const b = e.target.closest('.tab'); if (!b) return;
   document.querySelectorAll('#tabs .tab').forEach(t => t.classList.toggle('active', t === b));
-  ['dashboard','upload','products','orders'].forEach(n => $('tab-' + n).classList.toggle('hidden', n !== b.dataset.tab));
+  ['dashboard','upload','bulk','products','orders'].forEach(n => $('tab-' + n).classList.toggle('hidden', n !== b.dataset.tab));
   if (b.dataset.tab === 'dashboard') loadDashboard();
+  if (b.dataset.tab === 'bulk') bulkInit();
   if (b.dataset.tab === 'products') loadProducts();
   if (b.dataset.tab === 'orders') loadOrders();
 });
@@ -564,6 +607,143 @@ async function loadOrders() {
       ${o.status === 'failed' && o.result_desc ? `<p class="text-[11px] text-red-300 mt-1">${esc(o.result_desc)}</p>` : ''}
     </div>`).join('') || '<p class="text-gray-500 text-sm">No orders yet.</p>';
 }
+
+/* ---------- BULK UPLOAD ---------- */
+let bulk = [];
+const normGrade = x => { x = x.trim(); let m;
+  if (m = x.match(/^(?:grade|gr|g)\s*0?(\d{1,2})$/i)) return 'Grade ' + m[1];
+  if (m = x.match(/^pp\s*([12])$/i)) return 'PP' + m[1];
+  if (m = x.match(/^form\s*([1-4])$/i)) return 'Form ' + m[1];
+  return ''; };
+const parseTerm = x => { const t = x.match(/term\s*0?([1-3])/i);
+  const st = /open/i.test(x) ? 'Opener' : /mid/i.test(x) ? 'Mid-Term' : /end/i.test(x) ? 'End-Term' : '';
+  return { term: t ? 'Term ' + t[1] : (/full|annual|year/i.test(x) ? 'Full Year' : ''), stage: st }; };
+const levelOf = g => { let m; if (/^PP/.test(g)) return 'Pre-Primary';
+  if (m = g.match(/^Grade (\d+)/)) { const n = +m[1]; return n <= 3 ? 'Lower Primary' : n <= 6 ? 'Upper Primary' : n <= 9 ? 'Junior School' : 'Senior School'; }
+  return /^Form/.test(g) ? 'Senior School' : ''; };
+function autoCat(r) { const it = r.item || '', t = it + ' ' + r.stage;
+  if (/predict|kpsea|kjsea|kcse/i.test(t)) return 'exams-prediction';
+  if (/marking/i.test(it)) return 'exams-termly';
+  if (/scheme/i.test(it)) return 'schemes-of-work';
+  if (/lesson/i.test(t)) return 'lesson-plans';
+  if (/curriculum/i.test(t)) return 'curriculum-designs';
+  if (/topical/i.test(t)) return 'topical-questions';
+  if (/revision/i.test(t)) return 'revision-materials';
+  if (/note/i.test(t)) return 'notes';
+  if (/book/i.test(t)) return 'textbooks';
+  if (/rubric|assessment|record/i.test(t)) return 'assessment-tools';
+  if (/exam|test|paper/i.test(t) || r.stage) return 'exams-termly';
+  return ''; }
+function parseName(fn) {
+  const base = fn.replace(/\.[^.]+$/, '').replace(/\s+/g, ' ').trim();
+  let parts = base.split('_').map(x => x.trim()).filter(Boolean);
+  if (parts.length < 3 && / - /.test(base)) parts = base.split(/\s+-\s+/).map(x => x.trim()).filter(Boolean);
+  const r = { subject: '', grade: '', term: '', stage: '', item: '', ok: false };
+  if (parts.length >= 3) {
+    r.subject = parts[0]; r.grade = normGrade(parts[1]);
+    if (parts.length >= 4) { const t = parseTerm(parts[2]); r.term = t.term; r.stage = t.stage; r.item = parts.slice(3).join(' '); }
+    else r.item = parts[2];
+    r.ok = !!r.grade;
+  }
+  r.title = r.ok ? [r.subject, r.grade, [r.term, r.stage].filter(Boolean).join(' '), r.item].filter(Boolean).join(' ') : base.replace(/_/g, ' ');
+  return r;
+}
+function bulkInit() {
+  if ($('bCat').options.length) return;
+  $('bCat').innerHTML = '<option value="auto">Auto-detect from file name (recommended)</option>' + categories.map(c => `<option value="${c.id}">${esc(c.name)}</option>`).join('');
+  $('bLevel').innerHTML = '<option value="auto">Auto from grade in file name (recommended)</option>' + Object.keys(LEVELS).map(l => `<option>${l}</option>`).join('');
+}
+function bulkApply() {
+  const free = $('bFree').checked;
+  bulk.forEach(r => {
+    if (r.done) return;
+    const c = $('bCat').value;
+    r.cat = c === 'auto' ? (categories.find(x => x.slug === autoCat(r))?.id || '') : c;
+    r.price = free ? 0 : Number($('bPrice').value || 0);
+  });
+  bulkRender();
+}
+const stCls = r => r.done ? 'bg-emerald-500/20 text-emerald-300' : /Fail|Skipped/.test(r.status) ? 'bg-red-500/20 text-red-300' : r.ok ? 'bg-sky-500/20 text-sky-300' : 'bg-amber-500/20 text-amber-300';
+function bulkRender() {
+  $('bGo').classList.toggle('hidden', !bulk.length);
+  $('bList').innerHTML = bulk.map((r, i) => `<div class="card p-3 space-y-2 ${r.ok || r.done ? '' : 'border-amber-500/50'}">
+    <div class="flex justify-between gap-2 text-[11px]"><span class="text-gray-500 break-all">${esc(r.file.name)}</span><span class="chip whitespace-nowrap ${stCls(r)}">${esc(r.status)}</span></div>
+    <input data-i="${i}" data-f="title" class="inp" value="${esc(r.title)}">
+    <div class="grid grid-cols-3 gap-2"><input data-i="${i}" data-f="grade" class="inp" value="${esc(r.grade)}" placeholder="Grade"><input data-i="${i}" data-f="term" class="inp" value="${esc(r.term)}" placeholder="Term"><input data-i="${i}" data-f="price" type="number" min="0" class="inp" value="${r.price}"></div>
+    <select data-i="${i}" data-f="cat" class="inp"><option value="">-- Choose category --</option>${categories.map(c => `<option value="${c.id}" ${c.id === r.cat ? 'selected' : ''}>${esc(c.name)}</option>`).join('')}</select></div>`).join('');
+}
+$('bFiles').addEventListener('change', e => {
+  bulk = [...e.target.files].map(f => { const r = parseName(f.name); r.file = f; r.status = r.ok ? 'Ready' : 'Check file name'; r.done = false; return r; });
+  setMsg($('bMsg'), bulk.length ? bulk.length + ' file(s) ready. Check the names below, then tap Upload All.' + (bulk.some(r => !r.ok) ? ' Files marked amber do not follow the naming rule, so check their grade and title.' : '') : '');
+  bulkApply();
+});
+['bCat', 'bPrice', 'bFree'].forEach(id => $(id).addEventListener('change', bulkApply));
+$('bList').addEventListener('input', e => {
+  const t = e.target, r = bulk[t.dataset.i]; if (!r) return;
+  r[t.dataset.f] = t.dataset.f === 'price' ? Number(t.value || 0) : t.value;
+});
+async function bulkCover(r) {
+  const f = r.file;
+  if (/\.pdf$/i.test(f.name)) {
+    try {
+      const pdf = await pdfjsLib.getDocument({ data: await f.arrayBuffer() }).promise;
+      const page = await pdf.getPage(1), b = page.getViewport({ scale: 1 }), vp = page.getViewport({ scale: 900 / b.width });
+      const c = document.createElement('canvas'); c.width = vp.width; c.height = vp.height;
+      const ctx = c.getContext('2d'); ctx.fillStyle = '#fff'; ctx.fillRect(0, 0, c.width, c.height);
+      await page.render({ canvasContext: ctx, viewport: vp }).promise;
+      return { blob: await new Promise(x => c.toBlob(x, 'image/jpeg', 0.82)), pages: pdf.numPages };
+    } catch (e) { console.error(e); }
+  }
+  const c = document.createElement('canvas'); c.width = 600; c.height = 849; const ctx = c.getContext('2d');
+  ctx.fillStyle = '#0b1329'; ctx.fillRect(0, 0, 600, 849); ctx.strokeStyle = '#f59e0b'; ctx.lineWidth = 8; ctx.strokeRect(24, 24, 552, 801);
+  ctx.textAlign = 'center'; ctx.fillStyle = '#f59e0b'; ctx.font = 'bold 26px sans-serif'; ctx.fillText('ELEVATE KENYA PREDICTIONS', 300, 110);
+  ctx.fillStyle = '#fff'; ctx.font = 'bold 46px sans-serif';
+  let line = '', y = 330; for (const w of r.title.split(' ')) { const t = line + w + ' '; if (ctx.measureText(t).width > 480 && line) { ctx.fillText(line.trim(), 300, y); line = w + ' '; y += 62; } else line = t; }
+  ctx.fillText(line.trim(), 300, y);
+  ctx.fillStyle = '#f59e0b'; ctx.font = 'bold 30px sans-serif'; ctx.fillText([r.grade, r.term].filter(Boolean).join('  |  '), 300, 740);
+  return { blob: await new Promise(x => c.toBlob(x, 'image/jpeg', 0.85)), pages: null };
+}
+$('bGo').addEventListener('click', async () => {
+  const todo = bulk.filter(r => !r.done), btn = $('bGo'); if (!todo.length) return;
+  btn.disabled = true; $('bBar').classList.remove('hidden');
+  const { data: ex } = await sb.from('products').select('title');
+  const have = new Set((ex || []).map(x => x.title.toLowerCase()));
+  let n = 0, ok = 0, skip = 0, fail = 0;
+  for (const r of todo) {
+    n++; $('bFill').style.width = (n / todo.length * 100) + '%'; setMsg($('bMsg'), `Uploading ${n} of ${todo.length}: ${r.title}`);
+    let fp = null, cp = null;
+    try {
+      const title = r.title.trim();
+      if (!r.cat) throw new Error('Choose a category');
+      if (!title) throw new Error('Title is empty');
+      if ($('bSkip').checked && have.has(title.toLowerCase())) { r.status = 'Skipped (already exists)'; skip++; bulkRender(); continue; }
+      const cat = categories.find(c => c.id === r.cat), cv = await bulkCover(r);
+      const ext = (r.file.name.split('.').pop() || 'pdf').toLowerCase(), stamp = Date.now(), sl = slugify(title) || 'file';
+      fp = `${cat.slug}/${stamp}_${sl}.${ext}`; cp = `${stamp}_${sl}.jpg`;
+      let u = await sb.storage.from('products').upload(fp, r.file, { contentType: r.file.type || 'application/octet-stream' }); if (u.error) throw u.error;
+      u = await sb.storage.from('covers').upload(cp, cv.blob, { contentType: 'image/jpeg' }); if (u.error) throw u.error;
+      const lv = $('bLevel').value === 'auto' ? levelOf(r.grade) : $('bLevel').value;
+      const info = [r.grade, r.subject, [r.term, r.stage].filter(Boolean).join(' '), r.item].filter(Boolean).join(' ') || title;
+      const ins = await sb.from('products').insert({
+        slug: sl + '-' + Math.random().toString(36).slice(2, 6), title,
+        short_desc: (info + ' for the CBC curriculum. Instant download after M-Pesa payment.').slice(0, 140),
+        description: info + ' for the CBC curriculum, prepared by Elevate Kenya Predictions. Pay with M-Pesa and download instantly.',
+        includes: [], category_id: r.cat, level: lv || null, grade: r.grade || null, subject: r.subject || null,
+        term: r.term || null, exam_type: r.stage || null, year: $('bYear').value ? Number($('bYear').value) : null,
+        price: Number(r.price || 0), pages: cv.pages, file_path: fp, file_ext: ext, file_size: r.file.size,
+        cover_url: sb.storage.from('covers').getPublicUrl(cp).data.publicUrl, is_published: $('bPub').checked
+      });
+      if (ins.error) throw ins.error;
+      r.done = true; r.status = 'Uploaded'; have.add(title.toLowerCase()); ok++;
+    } catch (err) {
+      console.error(err); fail++; r.status = 'Failed: ' + (err.message || err);
+      if (fp) await sb.storage.from('products').remove([fp]); if (cp) await sb.storage.from('covers').remove([cp]);
+    }
+    bulkRender();
+  }
+  setMsg($('bMsg'), `Finished: ${ok} uploaded, ${skip} skipped, ${fail} failed.`, fail ? 'text-amber-300' : 'text-emerald-400');
+  btn.disabled = false;
+});
 
 /* ---------- PREVIEW PAGES ---------- */
 let prevP = null;
