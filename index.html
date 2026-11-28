@@ -20,6 +20,7 @@ body{font-family:'Plus Jakarta Sans',sans-serif;background:#070b19;color:#f3f4f6
 .hero{background:radial-gradient(circle at 20% 10%,rgba(245,158,11,.16),transparent 45%),radial-gradient(circle at 85% 30%,rgba(59,130,246,.14),transparent 45%)}
 .sk{background:linear-gradient(90deg,#0f1830,#17233f,#0f1830);background-size:200% 100%;animation:sk 1.2s infinite}@keyframes sk{to{background-position:-200% 0}}
 select.inp option{background:#0b1329}
+.shelf{scrollbar-width:none}.shelf::-webkit-scrollbar{display:none}.aisle{scroll-margin-top:8rem}.more{font-size:.75rem;font-weight:700;color:#f59e0b;white-space:nowrap}
 </style>
 </head>
 <body>
@@ -35,7 +36,7 @@ select.inp option{background:#0b1329}
 </nav>
 
 <header class="hero">
- <div class="max-w-7xl mx-auto px-4 py-12 md:py-20 text-center">
+ <div class="max-w-7xl mx-auto px-4 py-8 md:py-12 text-center">
   <span class="inline-block text-[11px] font-extrabold tracking-widest text-amber-400 border border-amber-500/40 bg-amber-500/10 px-4 py-1.5 rounded-full mb-5">KENYA'S CBC LEARNING RESOURCES STORE</span>
   <h1 class="text-3xl md:text-6xl font-extrabold leading-tight">Everything you need to <span class="text-transparent bg-clip-text bg-gradient-to-r from-amber-400 to-amber-200">teach, revise &amp; excel</span></h1>
   <p class="text-gray-300 max-w-2xl mx-auto mt-4 text-sm md:text-base">Schemes of work, lesson plans, curriculum designs, exams, prediction papers, textbooks and revision materials. Pay with M-Pesa and download instantly.</p>
@@ -52,26 +53,33 @@ select.inp option{background:#0b1329}
  </div>
 </header>
 
+<div id="deptBar" class="sticky top-16 z-30 bg-[#0b1329]/95 backdrop-blur border-b border-white/10"><div id="deptChips" class="max-w-7xl mx-auto px-4 py-2 flex items-center gap-2 overflow-x-auto"></div></div>
 <main class="max-w-7xl mx-auto px-4 pb-16">
- <section class="pt-6"><div class="flex flex-wrap gap-2 items-center"><b class="text-xs text-gray-400 mr-1">BROWSE BY:</b><a href="lower-primary.html" class="chip hover:bg-amber-500 hover:text-black">Lower Primary</a><a href="upper-primary.html" class="chip hover:bg-amber-500 hover:text-black">Upper Primary</a><a href="junior-school.html" class="chip hover:bg-amber-500 hover:text-black">Junior School</a><a href="senior-school.html" class="chip hover:bg-amber-500 hover:text-black">Senior School</a><a href="prediction-papers.html" class="chip hover:bg-amber-500 hover:text-black">Prediction Papers</a><a href="teaching.html" class="chip hover:bg-amber-500 hover:text-black">Teaching Materials</a><a href="revision-topical.html" class="chip hover:bg-amber-500 hover:text-black">Revision & Topical Questions</a></div></section>
- <section id="cats" class="py-8"><h2 class="text-xl md:text-2xl font-extrabold mb-4">Shop by category</h2><div id="catGrid" class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3"></div></section>
- <div id="rows"></div>
+ <section id="levels" class="pt-6"><h2 class="text-lg md:text-2xl font-extrabold mb-3">Shop by level</h2><div id="levelGrid" class="grid grid-cols-2 lg:grid-cols-4 gap-3"></div><h2 class="text-lg md:text-2xl font-extrabold mt-6 mb-3">Popular sections</h2><div id="secGrid" class="grid grid-cols-2 lg:grid-cols-4 gap-3"></div></section>
+ <div id="aisles"></div>
  <section id="browse" class="py-8">
-  <h2 class="text-xl md:text-2xl font-extrabold mb-4">All resources</h2>
+  <h2 id="browseTitle" class="text-xl md:text-2xl font-extrabold mb-4">All resources</h2>
   <div class="flex gap-2 overflow-x-auto pb-3" id="catChips"></div>
   <div class="grid sm:grid-cols-3 gap-3 my-3">
    <select id="fLevel" class="inp"><option value="">All levels</option></select>
    <select id="fGrade" class="inp"><option value="">All grades</option></select>
-   <select id="fSort" class="inp"><option value="new">Newest</option><option value="pl">Price: low to high</option><option value="ph">Price: high to low</option><option value="pop">Most popular</option></select>
+   <select id="fSort" class="inp"><option value="mix">Mixed (recommended)</option><option value="new">Newest first</option><option value="pl">Price: low to high</option><option value="ph">Price: high to low</option><option value="pop">Most popular</option></select>
   </div>
   <p id="count" class="text-xs text-gray-400 mb-3"></p>
   <div id="grid" class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 md:gap-5"></div>
+  <div class="text-center mt-6"><button id="more" class="hidden btn px-8 py-3 rounded-full text-sm">Load more</button></div>
  </section>
  <section class="glass rounded-2xl p-6 md:p-10 grid md:grid-cols-3 gap-6 text-center">
   <div><i class="fa-solid fa-hand-holding-dollar text-2xl text-amber-400"></i><h3 class="font-extrabold mt-2">1. Choose</h3><p class="text-xs text-gray-400 mt-1">Pick the resources you need.</p></div>
   <div><i class="fa-solid fa-mobile-screen-button text-2xl text-emerald-400"></i><h3 class="font-extrabold mt-2">2. Pay with M-Pesa</h3><p class="text-xs text-gray-400 mt-1">Enter your number and approve the prompt on your phone.</p></div>
   <div><i class="fa-solid fa-cloud-arrow-down text-2xl text-sky-400"></i><h3 class="font-extrabold mt-2">3. Download</h3><p class="text-xs text-gray-400 mt-1">Your files are ready instantly. No delivery wait.</p></div>
  </section>
+ <section class="glass rounded-2xl p-6 md:p-8 mt-8"><h2 class="font-extrabold text-lg mb-4"><i class="fa-solid fa-sitemap text-amber-400 mr-2"></i>Resource directory</h2>
+  <div class="grid md:grid-cols-3 gap-6 text-xs text-gray-300">
+   <div><h3 class="font-bold text-white mb-2">By level</h3><ul class="space-y-1.5"><li><a class="hover:text-amber-400" href="lower-primary.html">Pre-Primary &amp; Lower Primary</a></li><li><a class="hover:text-amber-400" href="upper-primary.html">Upper Primary (Grade 4-6)</a></li><li><a class="hover:text-amber-400" href="junior-school.html">Junior School (Grade 7-9)</a></li><li><a class="hover:text-amber-400" href="senior-school.html">Senior School (Grade 10-12)</a></li></ul></div>
+   <div><h3 class="font-bold text-white mb-2">By department</h3><ul class="space-y-1.5"><li><a class="hover:text-amber-400" href="index.html#cat=schemes-of-work">Schemes of Work</a></li><li><a class="hover:text-amber-400" href="index.html#cat=lesson-plans">Lesson Plans</a></li><li><a class="hover:text-amber-400" href="index.html#cat=curriculum-designs">Curriculum Designs</a></li><li><a class="hover:text-amber-400" href="index.html#cat=exams-termly">Termly Exams</a></li><li><a class="hover:text-amber-400" href="index.html#cat=exams-prediction">Prediction Papers</a></li><li><a class="hover:text-amber-400" href="index.html#cat=textbooks">Textbooks</a></li><li><a class="hover:text-amber-400" href="index.html#cat=revision-materials">Revision Materials</a></li><li><a class="hover:text-amber-400" href="index.html#cat=topical-questions">Topical Questions</a></li><li><a class="hover:text-amber-400" href="index.html#cat=notes">Notes</a></li><li><a class="hover:text-amber-400" href="index.html#cat=assessment-tools">Assessment Tools</a></li><li><a class="hover:text-amber-400" href="index.html#cat=professional-docs">Teacher Documents</a></li></ul></div>
+   <div><h3 class="font-bold text-white mb-2">Special sections</h3><ul class="space-y-1.5"><li><a class="hover:text-amber-400" href="schemes-of-work-2027.html">Schemes of Work 2027 (All Subjects)</a></li><li><a class="hover:text-amber-400" href="prediction-papers.html">Prediction Papers (KPSEA, KJSEA, KCSE)</a></li><li><a class="hover:text-amber-400" href="teaching.html">Teaching Materials</a></li><li><a class="hover:text-amber-400" href="revision-topical.html">Revision &amp; Topical Questions</a></li><li><a class="hover:text-amber-400" href="grade-10-biology-textbook.html">Grade 10 Biology Textbook</a></li><li><a class="hover:text-amber-400" href="grade-10-mathematics-textbook.html">Grade 10 Mathematics Textbook</a></li></ul></div>
+  </div></section>
 </main>
 
 <footer class="bg-[#050814] border-t border-white/10 py-10 text-sm">
@@ -94,7 +102,7 @@ const sb=supabase.createClient('https://knjikiqfqwycadkejebx.supabase.co','sb_pu
 const $=id=>document.getElementById(id),WA='254746357349';
 const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const kes=n=>'KES '+Number(n).toLocaleString('en-KE');
-let P=[],C=[],cart=[],S={cat:'',q:'',level:'',grade:'',sort:'new'};
+let P=[],C=[],cart=[],S={cat:'',q:'',level:'',grade:'',sort:'mix',shown:12};
 try{cart=JSON.parse(localStorage.getItem('ekp_cart')||'[]')}catch(e){}
 const saveCart=()=>{try{localStorage.setItem('ekp_cart',JSON.stringify(cart))}catch(e){}const n=$('cartN');n.textContent=cart.length;n.style.display=cart.length?'flex':'none'};
 const byId=id=>P.find(p=>p.id===id),catName=id=>C.find(c=>c.id===id)?.name||'';
@@ -102,23 +110,48 @@ const free=p=>Number(p.price)===0,off=p=>p.original_price&&p.original_price>p.pr
 
 function card(p){return `<div class="pc glass rounded-2xl overflow-hidden flex flex-col cursor-pointer" data-open="${p.id}">
 <div class="relative bg-white/5 aspect-[3/4]"><img src="${esc(p.cover_url)}" alt="${esc(p.title)}" loading="lazy" class="w-full h-full object-cover" onerror="this.src='logo.png';this.className='w-full h-full object-contain p-8'">
-<div class="absolute top-2 left-2 flex flex-col gap-1">${free(p)?'<span class="bg-emerald-500 text-black text-[10px] font-extrabold px-2 py-0.5 rounded">FREE</span>':''}${off(p)?`<span class="bg-red-500 text-white text-[10px] font-extrabold px-2 py-0.5 rounded">-${off(p)}%</span>`:''}${p.is_bestseller?'<span class="bg-amber-400 text-black text-[10px] font-extrabold px-2 py-0.5 rounded">BESTSELLER</span>':''}</div></div>
+<div class="absolute top-2 left-2 flex flex-col gap-1">${free(p)?'<span class="bg-emerald-500 text-black text-[10px] font-extrabold px-2 py-0.5 rounded">FREE</span>':''}${off(p)?`<span class="bg-red-500 text-white text-[10px] font-extrabold px-2 py-0.5 rounded">-${off(p)}%</span>`:''}${p.is_bestseller?'<span class="bg-amber-400 text-black text-[10px] font-extrabold px-2 py-0.5 rounded">BESTSELLER</span>':''}${isNew(p)?'<span class="bg-sky-500 text-white text-[10px] font-extrabold px-2 py-0.5 rounded">NEW</span>':''}</div></div>
 <div class="p-3 flex-1 flex flex-col"><p class="text-[10px] font-bold text-amber-400 uppercase">${esc(catName(p.category_id))}</p><h3 class="font-bold text-[13px] leading-snug mt-1 line-clamp-2">${esc(p.title)}</h3><p class="text-[11px] text-gray-400 mt-1">${esc([p.grade,p.subject,p.term].filter(Boolean).join(' · '))}</p>
 <div class="mt-auto pt-3 flex items-center justify-between gap-2"><div><b class="${free(p)?'text-emerald-400':'text-white'}">${free(p)?'FREE':kes(p.price)}</b>${off(p)?`<span class="block text-[10px] text-gray-500 line-through">${kes(p.original_price)}</span>`:''}</div>
 ${free(p)?`<a href="/api/download?free=${p.id}" data-stop class="btn text-[11px] px-3 py-2 rounded-lg">Get</a>`:`<button data-add="${p.id}" class="btn text-[11px] px-3 py-2 rounded-lg"><i class="fa-solid fa-cart-plus"></i></button>`}</div></div></div>`}
 
-function row(id,title,icon,list){if(!list.length)return'';return `<section id="${id}" class="py-6"><h2 class="text-xl md:text-2xl font-extrabold mb-4"><i class="${icon} text-amber-400 mr-2"></i>${title}</h2><div class="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-5">${list.slice(0,8).map(card).join('')}</div></section>`}
+const CAT_PAGE={'schemes-of-work':'schemes-of-work-2027.html','exams-prediction':'prediction-papers.html'};
+const LV=[['Pre-Primary & Lower Primary','lower-primary.html',['Pre-Primary','Lower Primary'],'fa-solid fa-shapes','PP1 to Grade 3'],['Upper Primary','upper-primary.html',['Upper Primary'],'fa-solid fa-book-open','Grade 4 to 6'],['Junior School','junior-school.html',['Junior School'],'fa-solid fa-flask','Grade 7 to 9'],['Senior School','senior-school.html',['Senior School'],'fa-solid fa-graduation-cap','Grade 10 to 12']];
+const SC=[['Schemes of Work 2027','schemes-of-work-2027.html','fa-solid fa-calendar-check',['schemes-of-work']],['Prediction Papers','prediction-papers.html','fa-solid fa-bullseye',['exams-prediction']],['Teaching Materials','teaching.html','fa-solid fa-chalkboard-user',['schemes-of-work','lesson-plans','curriculum-designs','assessment-tools','professional-docs']],['Revision & Topical','revision-topical.html','fa-solid fa-list-check',['revision-materials','topical-questions','notes']]];
+const cslug=p=>C.find(c=>c.id===p.category_id)?.slug||'';
+const isNew=p=>Date.now()-new Date(p.created_at)<14*864e5;
+const balanced=(l,per,lim)=>{const n={},o=[];for(const p of l){n[p.category_id]=(n[p.category_id]||0)+1;if(n[p.category_id]<=per)o.push(p);if(o.length>=lim)break}return o};
+const spread=(L,n)=>{const g={};L.forEach(p=>(g[p.subject||'']=g[p.subject||'']||[]).push(p));const ks=Object.keys(g),o=[];for(let i=0;o.length<n&&i<80;i++)ks.forEach(k=>{if(g[k][i]&&o.length<n)o.push(g[k][i])});return o};
+const mix=l=>{const g={};l.forEach(p=>(g[p.category_id]=g[p.category_id]||[]).push(p));const ks=Object.keys(g),o=[];for(let i=0;o.length<l.length;i++)ks.forEach(k=>{if(g[k][i])o.push(g[k][i])});return o};
+function shelf(id,title,icon,sub,list,more){if(!list.length)return'';return `<section id="${id}" class="aisle py-4"><div class="flex items-end justify-between gap-3 mb-3"><div><h2 class="text-lg md:text-2xl font-extrabold"><i class="${icon} text-amber-400 mr-2"></i>${title}</h2>${sub?`<p class="text-[11px] text-gray-400 mt-0.5">${sub}</p>`:''}</div>${more||''}</div><div class="relative"><div class="shelf flex gap-3 overflow-x-auto snap-x snap-mandatory pb-3">${list.map(p=>`<div class="w-40 sm:w-44 md:w-48 shrink-0 snap-start">${card(p)}</div>`).join('')}</div><button data-scroll="-1" aria-label="Previous" class="hidden md:flex absolute left-0 top-1/3 -translate-x-3 w-9 h-9 rounded-full bg-black/70 border border-white/20 items-center justify-center"><i class="fa-solid fa-chevron-left text-xs"></i></button><button data-scroll="1" aria-label="Next" class="hidden md:flex absolute right-0 top-1/3 translate-x-3 w-9 h-9 rounded-full bg-black/70 border border-white/20 items-center justify-center"><i class="fa-solid fa-chevron-right text-xs"></i></button></div></section>`}
+const tile=(n,u,ic,sub,cnt)=>`<a href="${u}" class="pc glass rounded-2xl p-4 flex items-center gap-3"><span class="w-11 h-11 shrink-0 rounded-xl bg-amber-500/15 text-amber-400 flex items-center justify-center text-lg"><i class="${ic}"></i></span><span class="min-w-0"><b class="block text-sm leading-tight">${esc(n)}</b>${sub?`<span class="block text-[11px] text-gray-400">${sub}</span>`:''}<span class="text-[10px] text-amber-300 font-bold">${cnt} item${cnt===1?'':'s'}</span></span></a>`;
+function clearF(){S.q='';S.cat='';S.level='';S.grade='';S.shown=12;$('q').value=''}
 
 function render(){
- $('catGrid').innerHTML=C.map(c=>`<button data-cat="${c.id}" class="glass pc rounded-2xl p-4 text-left"><i class="${esc(c.icon||'fa-solid fa-book')} text-2xl text-amber-400"></i><p class="font-extrabold text-sm mt-2">${esc(c.name)}</p><p class="text-[11px] text-gray-400 mt-0.5">${esc(c.tagline||'')}</p><p class="text-[10px] text-amber-300 font-bold mt-1">${P.filter(p=>p.category_id===c.id).length} items</p></button>`).join('');
- $('rows').innerHTML=row('featured','Featured resources','fa-solid fa-star',P.filter(p=>p.is_featured))+row('best','Best sellers','fa-solid fa-fire',P.filter(p=>p.is_bestseller))+row('free','Free resources','fa-solid fa-gift',P.filter(free))+row('new','New arrivals','fa-solid fa-sparkles',P.slice(0,8));
+ const filt=!!(S.q||S.cat||S.level||S.grade);
+ $('aisles').classList.toggle('hidden',filt);$('levels').classList.toggle('hidden',filt);
+ const have=C.filter(c=>P.some(p=>p.category_id===c.id));
+ $('deptChips').innerHTML=`<button class="chip ${filt?'':'on'}" data-home>All departments</button>`+have.map(c=>`<button class="chip" data-aisle="aisle-${esc(c.slug)}">${esc(c.name)} <span class="opacity-60">${P.filter(p=>p.category_id===c.id).length}</span></button>`).join('');
+ if(!filt){
+  $('levelGrid').innerHTML=LV.map(v=>tile(v[0],v[1],v[3],v[4],P.filter(p=>v[2].includes(p.level)).length)).join('');
+  $('secGrid').innerHTML=SC.map(v=>tile(v[0],v[1],v[2],'',P.filter(p=>v[3].includes(cslug(p))).length)).join('');
+  let h=shelf('new','Fresh on the shelf','fa-solid fa-sparkles','Newest uploads from every department',balanced(P,2,12))+shelf('featured','Featured','fa-solid fa-star','',balanced(P.filter(p=>p.is_featured),3,12))+shelf('best','Best sellers','fa-solid fa-fire','',balanced(P.filter(p=>p.is_bestseller),3,12))+shelf('free','Free resources','fa-solid fa-gift','Download instantly, no payment needed',balanced(P.filter(free),3,12));
+  C.forEach((c,i)=>{const L=P.filter(p=>p.category_id===c.id);if(!L.length)return;
+   const more=CAT_PAGE[c.slug]?`<a href="${CAT_PAGE[c.slug]}" class="more">View all ${L.length} &rarr;</a>`:(L.length>12?`<button data-cat="${c.id}" class="more">View all ${L.length} &rarr;</button>`:'');
+   h+=shelf('aisle-'+c.slug,esc(c.name),c.icon||'fa-solid fa-book',`AISLE ${String(i+1).padStart(2,'0')} &middot; ${esc(c.tagline||'')}`,spread(L,12),more)});
+  $('aisles').innerHTML=h;
+ }
  $('catChips').innerHTML=`<button class="chip ${!S.cat?'on':''}" data-cat="">All</button>`+C.map(c=>`<button class="chip ${S.cat===c.id?'on':''}" data-cat="${c.id}">${esc(c.name)}</button>`).join('');
  const lv=[...new Set(P.map(p=>p.level).filter(Boolean))];$('fLevel').innerHTML='<option value="">All levels</option>'+lv.map(l=>`<option ${S.level===l?'selected':''}>${esc(l)}</option>`).join('');
- const gr=[...new Set(P.filter(p=>!S.level||p.level===S.level).map(p=>p.grade).filter(Boolean))];$('fGrade').innerHTML='<option value="">All grades</option>'+gr.map(g=>`<option ${S.grade===g?'selected':''}>${esc(g)}</option>`).join('');
+ const gr=[...new Set(P.filter(p=>!S.level||p.level===S.level).map(p=>p.grade).filter(Boolean))].sort((a,b)=>a.localeCompare(b,undefined,{numeric:true}));$('fGrade').innerHTML='<option value="">All grades</option>'+gr.map(g=>`<option ${S.grade===g?'selected':''}>${esc(g)}</option>`).join('');
  let l=P.filter(p=>(!S.cat||p.category_id===S.cat)&&(!S.level||p.level===S.level)&&(!S.grade||p.grade===S.grade)&&(!S.q||[p.title,p.subject,p.grade,p.exam_type,p.short_desc,catName(p.category_id)].join(' ').toLowerCase().includes(S.q)));
+ if(S.sort==='mix'&&!S.cat)l=mix(l);
  const so={pl:(a,b)=>a.price-b.price,ph:(a,b)=>b.price-a.price,pop:(a,b)=>(b.sales_count+b.download_count)-(a.sales_count+a.download_count)}[S.sort];if(so)l=[...l].sort(so);
+ $('browseTitle').textContent=filt?'Results':'All resources';
  $('count').textContent=l.length+' resource'+(l.length===1?'':'s');
- $('grid').innerHTML=l.map(card).join('')||'<p class="col-span-full text-center text-gray-400 py-10">Nothing found. Try another search, or <a class="text-amber-400 underline" href="https://wa.me/'+WA+'?text=Hello, I am looking for ..." target="_blank">ask us on WhatsApp</a>.</p>';
+ const part=l.slice(0,S.shown);
+ $('grid').innerHTML=part.map(card).join('')||'<p class="col-span-full text-center text-gray-400 py-10">Nothing found. Try another search, or <a class="text-amber-400 underline" href="https://wa.me/'+WA+'?text=Hello, I am looking for ..." target="_blank">ask us on WhatsApp</a>.</p>';
+ const left=l.length-part.length;$('more').classList.toggle('hidden',left<=0);$('more').textContent='Load more ('+left+' left)';
 }
 
 function openProduct(id){const p=byId(id);if(!p)return;$('modalBox').innerHTML=`<button data-close class="absolute top-3 right-4 text-3xl text-gray-400 z-10">&times;</button><div class="grid md:grid-cols-5 gap-5 p-5">
@@ -160,15 +193,18 @@ document.addEventListener('click',e=>{const t=e.target;
  if(b=t.closest('[data-buy]'))return checkout([b.dataset.buy]);
  if(b=t.closest('[data-rm]')){cart=cart.filter(x=>x!==b.dataset.rm);saveCart();return renderCart()}
  if(t.closest('[data-close]')||t.id==='modal')return $('modal').classList.add('hidden');
- if(b=t.closest('[data-cat]')){S.cat=b.dataset.cat;render();return $('browse').scrollIntoView({behavior:'smooth'})}
+ if(b=t.closest('[data-cat]')){S.cat=b.dataset.cat;S.shown=12;render();return $('browse').scrollIntoView({behavior:'smooth'})}
+ if(b=t.closest('[data-aisle]')){clearF();render();return setTimeout(()=>{const el=$(b.dataset.aisle);if(el)el.scrollIntoView({behavior:'smooth'})},60)}
+ if(t.closest('[data-home]')){clearF();render();return scrollTo({top:0,behavior:'smooth'})}
+ if(b=t.closest('[data-scroll]'))return b.closest('.relative').querySelector('.shelf').scrollBy({left:b.dataset.scroll*320,behavior:'smooth'})
  if(b=t.closest('[data-open]'))return openProduct(b.dataset.open)});
 $('cartBtn').onclick=()=>{renderCart();$('drawer').classList.remove('hidden')};$('drawerX').onclick=()=>$('drawer').classList.add('hidden');$('drawer').onclick=e=>{if(e.target.id==='drawer')$('drawer').classList.add('hidden')};
 $('cartPay').onclick=()=>checkout(cart);
-$('q').oninput=e=>{S.q=e.target.value.trim().toLowerCase();render();if(S.q)$('browse').scrollIntoView({behavior:'smooth'})};
-$('fLevel').onchange=e=>{S.level=e.target.value;S.grade='';render()};$('fGrade').onchange=e=>{S.grade=e.target.value;render()};$('fSort').onchange=e=>{S.sort=e.target.value;render()};
+$('q').oninput=e=>{S.q=e.target.value.trim().toLowerCase();S.shown=12;render();if(S.q)$('browse').scrollIntoView({behavior:'smooth'})};
+$('fLevel').onchange=e=>{S.level=e.target.value;S.grade='';S.shown=12;render()};$('fGrade').onchange=e=>{S.grade=e.target.value;S.shown=12;render()};$('fSort').onchange=e=>{S.sort=e.target.value;S.shown=12;render()};$('more').onclick=()=>{S.shown+=12;render()};
 
 function hashGo(){const h=location.hash;if(h==='#cart'){renderCart();$('drawer').classList.remove('hidden')}else if(h.startsWith('#cat=')){const c=C.find(x=>x.slug===h.slice(5));if(c){S.cat=c.id;render();$('browse').scrollIntoView()}}}
-(async()=>{saveCart();$('grid').innerHTML=Array(8).fill('<div class="sk rounded-2xl aspect-[3/4]"></div>').join('');
+(async()=>{saveCart();$('aisles').innerHTML='<div class="sk rounded-2xl h-64 my-6"></div>';$('grid').innerHTML=Array(8).fill('<div class="sk rounded-2xl aspect-[3/4]"></div>').join('');
  const [c,p,s]=await Promise.all([sb.from('categories').select('*').eq('is_active',true).order('sort_order'),sb.from('products').select('id,slug,title,short_desc,description,includes,category_id,level,grade,subject,term,exam_type,year,price,original_price,pages,cover_url,file_ext,is_featured,is_bestseller,sales_count,download_count,created_at').eq('is_published',true).order('created_at',{ascending:false}),sb.from('settings').select('*')]);
  C=c.data||[];P=p.data||[];cart=cart.filter(id=>byId(id));saveCart();
  const a=(s.data||[]).find(x=>x.key==='announcement')?.value;if(a){$('ann').textContent=a;$('ann').classList.remove('hidden')}
